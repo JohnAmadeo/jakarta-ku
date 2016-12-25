@@ -1,7 +1,7 @@
 var webpack = require('webpack');  
 module.exports = {  
   entry: {
-    "index": "./static/jsx/index.jsx"
+    "index": "./static/js/index.jsx"
   },
   output: {
     path: __dirname + '/static/dist',
