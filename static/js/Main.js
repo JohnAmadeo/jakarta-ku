@@ -39,10 +39,7 @@ class InfoBar extends React.Component {
       <div className="InfoBar">
         <div className="container">
           <CategoryList />
-          <div>
-            {/*<Searchbar />*/}
-            asdf
-          </div>
+          <SearchBar />
         </div>
       </div>
     )
@@ -57,23 +54,42 @@ class CategoryList extends React.Component {
     return (
       <div className="CategoryList">
         <button type="button" className="btn btn-lg btn-default">
-          &#43; Education
+          &#43; Pendidikan
         </button>
         <button type="button" className="btn btn-lg btn-default">
-          &minus; Demographics
+          &minus; Demografi
         </button>
         <button type="button" className="btn btn-lg btn-default">
-          &#43; Religion
+          &#43; Agama
         </button>
         <button type="button" className="btn btn-lg btn-default">
-          &#43; Occupation
+          &#43; Pekerjaan
         </button>
         <button type="button" className="btn btn-lg btn-default">
-          &#43; Marriage
+          &#43; Status Pernikahan
         </button>
       </div>
     )
   }
 }
 
+class SearchBar extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    var placeholder = "Di kecamatan manakah letak lokasi ini?";
+    return (
+      <div className="SearchBar"> 
+        <div className="input-group">
+          <span className="input-group-addon" id="basic-addon1">@</span>
+          <input type="text" className="form-control" 
+                 placeholder={placeholder} aria-describedby="basic-addon1"/>
+        </div>
+      </div>  
+    )
+  }
+}
+
 module.exports = Main;
+

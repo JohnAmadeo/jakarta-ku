@@ -31,7 +31,7 @@ body {
   text-align: center;
 }
 
-@media (min-width: 0px) and (max-width: 636px) {
+@media (min-width: 0px) and (max-width: 660px) {
   #app .CategoryList .btn{
     margin: 10px 5px 2px 5px;
   }
@@ -42,7 +42,7 @@ body {
   }
 }
 
-@media (min-width: 636px) {
+@media (min-width: 660px) {
   #app .CategoryList .btn{
     margin: 10px 5px;
   }
@@ -53,6 +53,10 @@ body {
   padding: 5px 15px;
   text-align: left;
   border-radius: 15px;
+}
+/* SearchBar */
+#app .SearchBar {
+  border: 1px solid black;
 }
 
 /* JakartaMap */
