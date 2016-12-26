@@ -1,3 +1,61 @@
+body {
+  padding-top: 50px;
+}
+
+/*
+#app {
+  font-family: 'Source Sans Pro', 'Helvetica';
+}
+*/
+
+/* Header */
+#app .navbar {
+  border: 1px solid black;
+}
+
+#app .Header .navbar-brand {
+  color: #000000;
+}
+
+/* InfoBar */
+@media (min-width: 768px) {
+  #app .InfoBar .container {
+    max-width: 1324px;
+  }
+}
+
+/* CategoryList */
+#app .CategoryList {
+  border: 1px solid blue;
+  display: block;
+  text-align: center;
+}
+
+@media (min-width: 0px) and (max-width: 636px) {
+  #app .CategoryList .btn{
+    margin: 10px 5px 2px 5px;
+  }
+
+  #app .CategoryList {
+    width: 375px;
+    margin: 0 auto 10px auto;
+  }
+}
+
+@media (min-width: 636px) {
+  #app .CategoryList .btn{
+    margin: 10px 5px;
+  }
+}
+
+#app .CategoryList .btn{
+  font-size: 14px;
+  padding: 5px 15px;
+  text-align: left;
+  border-radius: 15px;
+}
+
+/* JakartaMap */
 #app .JakartaMap svg {
   fill: #FFFFFF;
 }
