@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
-import UUID from 'uuid/v4';
 import Store from 'store2';
+import JakartaMap from './JakartaMap';
 
 class Main extends React.Component {
   constructor(props) {
@@ -10,17 +10,10 @@ class Main extends React.Component {
   render() {
     return (
       <div className='Main'>
-        <Sample />
+        <JakartaMap />
       </div>
     )
   }
-}
-
-const Sample = (props) => {
-  return (
-    <div className='Sample'>
-    </div>
-  )
 }
 
 module.exports = Main;
