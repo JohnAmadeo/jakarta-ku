@@ -83,11 +83,11 @@ class Display extends React.Component {
   render() {
     return (
       <div className="Display">
-        <div className="box region-box col-md-6">
+        <div className="col-md-6">
           <SearchBar />
           <RegionList />
         </div>
-        <div className="box col-md-6">
+        <div className="col-md-6">
           <JakartaMap />
         </div>
       </div>

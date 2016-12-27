@@ -89,15 +89,8 @@ body {
   margin-top: 10px;
 }
 
-#app .Display .box  {
-  /*border: 1px solid black;*/
+#app .Display .col-md-6  {
   padding: 0px;
-}
-
-#app .Display .region-box  {
-  /*border: 1px solid black;*/
-  /*padding-left: 20px;*/
-  /*padding-top: 5px;*/
 }
 
 /* RegionList */
@@ -125,7 +118,14 @@ body {
 }
 
 /* JakartaMap */
-@media (min-width: 970px) and (max-width: 1240px){
+@media (min-width: 614px) and (max-width: 992px){
+  #app .JakartaMap {
+    width: 600px;
+    margin: 0 auto;
+  }  
+}
+
+@media (min-width: 992px) and (max-width: 1240px){
   #app .JakartaMap {
     width: 500px;
   }  
