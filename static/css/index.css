@@ -49,19 +49,25 @@ body {
 }
 
 /* SearchBar */
-#app .SearchBar {
-  /*border: 1px solid black;*/
+/*#app .SearchBar {
   padding: 2px 2px 2px 50px;
+}*/
+
+@media (min-width: 0px) and (max-width: 992px){
+  #app .SearchBar .input-group {
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 992px) {
+  #app .SearchBar .input-group {
+    margin: 0 5px 0 auto;
+  }
 }
 
 #app .SearchBar .input-group {
   width: 90%;
 }  
-
-#app .SearchBar .input-group {
-  margin: 0 5px 0 auto;
-  /*margin: 0px;*/
-}
 
 #app .SearchBar .input-group-addon {
   background-color: transparent;
@@ -94,20 +100,18 @@ body {
   /*padding-top: 5px;*/
 }
 
-#app .RegionList {
-  padding-left: 50px;
-}
-
 /* RegionList */
-@media (min-width: 0px) and (max-width: 990px){
+@media (min-width: 0px) and (max-width: 992px){
   #app .RegionList {
+    padding: 10px;
     text-align: center;
   }
 }
 
-@media (min-width: 990px) {
+@media (min-width: 992px) {
   #app .RegionList {
     text-align: right;
+    padding-left: 50px;
   }
 }
 
