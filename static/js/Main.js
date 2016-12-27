@@ -6,17 +6,31 @@ import JakartaMap from './JakartaMap';
 class Main extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      category: "education",
+      searchText: "",
+      selectedRegions: [],
+      selectedComparison: "region"
+    }
   }
   render() {
     return (
       <div className='Main'>
         <Header />
-        <CategoryList />
-        <Display />
-        {/*<ChartList />*/}
+        <CategoryBar />
+        <MapDisplay />
+        <DataDisplay />
       </div>
     )
   }
+}
+
+Main.propTypes = {
+  category: React.PropTypes.string.isRequired,
+  searchText: React.PropTypes.string.isRequired,
+  selectedRegions: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
+  selectedComparison: React.PropTypes.oneOf(["education", "region"]).isRequired  
 }
 
 const Header = (props) => {
@@ -31,13 +45,13 @@ const Header = (props) => {
   )
 }
 
-class CategoryList extends React.Component {
+class CategoryBar extends React.Component {
   constructor(props) {
     super(props);
   }
   render() {
     return (
-      <div className="CategoryList">
+      <div className="CategoryBar">
         <button type="button" className="btn btn-lg btn-default">
           &#43; Pendidikan
         </button>
@@ -63,7 +77,7 @@ class SearchBar extends React.Component {
     super(props);
   }
   render() {
-    var placeholder = "Pilih kecamatan dimana lokasi ini terletak";
+    const placeholder = "Pilih kecamatan dimana lokasi ini terletak";
     return (
       <div className="SearchBar"> 
         <div className="input-group">
@@ -76,20 +90,20 @@ class SearchBar extends React.Component {
   }
 }
 
-class Display extends React.Component {
+class MapDisplay extends React.Component {
   constructor(props) {
     super(props);
   }
   render() {
     return (
-      <div className="Display">
+      <div className="MapDisplay row">
         <div className="col-md-6">
           <SearchBar />
           <RegionList />
         </div>
         <div className="col-md-6">
           <JakartaMap />
-        </div>
+        </div>        
       </div>
     )
   }
@@ -100,7 +114,7 @@ class RegionList extends React.Component {
     super(props);
   }
   render() {
-    var regionList = ['Cakung','Cempaka Putih','Cengkareng','Cilandak','Cilincing','Cipayung','Ciracas','Duren Sawit','Gambir','Grogol Petamburan','Jagakarsa','Jatinegara','Johar Baru','Kali Deres','Kebayoran Baru','Kebayoran Lama','Kebon Jeruk','Kelapa Gading','Kemayoran','Kembangan','Koja','Kramat Jati','Makasar','Mampang Prapatan','Matraman','Menteng','Pademangan','Palmerah','Pancoran','Pasar Minggu','Pasar Rebo','Penjaringan','Pesanggrahan','Pulo Gadung','Sawah Besar','Senen','Setia Budi','Taman Sari','Tambora','Tanah Abang','Tanjung Priok','Tebet'];
+    const regionList = ['Cakung','Cempaka Putih','Cengkareng','Cilandak','Cilincing','Cipayung','Ciracas','Duren Sawit','Gambir','Grogol Petamburan','Jagakarsa','Jatinegara','Johar Baru','Kali Deres','Kebayoran Baru','Kebayoran Lama','Kebon Jeruk','Kelapa Gading','Kemayoran','Kembangan','Koja','Kramat Jati','Makasar','Mampang Prapatan','Matraman','Menteng','Pademangan','Palmerah','Pancoran','Pasar Minggu','Pasar Rebo','Penjaringan','Pesanggrahan','Pulo Gadung','Sawah Besar','Senen','Setia Budi','Taman Sari','Tambora','Tanah Abang','Tanjung Priok','Tebet'];
     return (
       <div className="RegionList"> 
         {regionList.map((region, index) => (
@@ -124,20 +138,49 @@ class Region extends React.Component {
   }
 }
 
-module.exports = Main;
+class DataDisplay extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <div className="DataDisplay">
+        <div className="container">
+          <ComparisonBar />
+          <LoremIpsum />
+          {/*<ChartList />*/}
+        </div>
+      </div>
+    )
+  }
+}
 
-{/*
-<div className="dropdown">
-  <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-    Dropdown &nbsp;
-    <span className="caret"></span>
-  </button>
-  <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-    <li><a href="#">Action</a></li>
-    <li><a href="#">Another action</a></li>
-    <li><a href="#">Something else here</a></li>
-    <li role="separator" class="divider"></li>
-    <li><a href="#">Separated link</a></li>
-  </ul>
-</div>
-*/}
+class ComparisonBar extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <div className="ComparisonBar">
+        <button type="button" className="btn btn-lg btn-default">
+          &#43; Bandingkan kategori
+        </button>
+        <button type="button" className="btn btn-lg btn-default">
+          &minus; Bandingkan kecamatan
+        </button>
+      </div>
+    )
+  }
+}
+
+const LoremIpsum = (props) => {
+  return (
+    <p>
+      "It is a period of civil war. Rebel spaceships, striking from a hidden base, have won their first victory against the evil Galactic Empire.
+      During the battle, Rebel spies managed to steal secret plans to the Empire's ultimate weapon, the DEATH STAR, an armored space station with enough power to destroy an entire planet.
+      Pursued by the Empire's sinister agents, Princess Leia races home aboard her starship, custodian of the stolen plans that can save her people and restore freedom to the galaxy....
+    </p>
+  )
+}
+
+module.exports = Main;
