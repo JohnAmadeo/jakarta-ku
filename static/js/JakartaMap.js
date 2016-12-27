@@ -8,7 +8,8 @@ class JakartaMap extends React.Component {
   render() {
     return (
       <div className='JakartaMap'>
-        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1169 1204" >
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
+             viewBox="0 80 1169 1085" >
 
           <path
              id="path3619"
@@ -184,12 +185,5 @@ class JakartaMap extends React.Component {
     )
   }
 }
-
-{/*const Sample = (props) => {
-  return (
-    <div className='Sample'>
-    </div>
-  )
-}*/}
 
 module.exports = JakartaMap;

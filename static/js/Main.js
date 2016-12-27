@@ -12,7 +12,8 @@ class Main extends React.Component {
       <div className='Main'>
         <Header />
         <InfoBar />
-        {/*<Display />*/}
+        <Display />
+        {/*<ChartList />*/}
       </div>
     )
   }
@@ -66,7 +67,7 @@ class CategoryList extends React.Component {
           &#43; Pekerjaan
         </button>
         <button type="button" className="btn btn-lg btn-default">
-          &#43; Status Pernikahan
+          &#43; Pernikahan
         </button>
       </div>
     )
@@ -91,5 +92,67 @@ class SearchBar extends React.Component {
   }
 }
 
+class Display extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <div className="Display">
+        <div className="box col-md-6">
+          <RegionList />
+        </div>
+        <div className="box col-md-6">
+          <JakartaMap />
+        </div>
+      </div>
+    )
+  }
+}
+
+class RegionList extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    var regionList = ['Cakung','Cempaka Putih','Cengkareng','Cilandak','Cilincing','Cipayung','Ciracas','Duren Sawit','Gambir','Grogol Petamburan','Jagakarsa','Jatinegara','Johar Baru','Kali Deres','Kebayoran Baru','Kebayoran Lama','Kebon Jeruk','Kelapa Gading','Kemayoran','Kembangan','Koja','Kramat Jati','Makasar','Mampang Prapatan','Matraman','Menteng','Pademangan','Palmerah','Pancoran','Pasar Minggu','Pasar Rebo','Penjaringan','Pesanggrahan','Pulo Gadung','Sawah Besar','Senen','Setia Budi','Taman Sari','Tambora','Tanah Abang','Tanjung Priok','Tebet'];
+    return (
+      <div className="RegionList"> 
+        {regionList.map((region) => (
+          <Region name={region} />
+        ))}
+      </div>
+    )
+  }
+}
+
+class Region extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <button type="button" className="btn btn-lg btn-default">
+        &#43; {this.props.name}
+      </button>
+    )
+  }
+}
+
 module.exports = Main;
 
+{/*
+<div className="dropdown">
+  <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    Dropdown &nbsp;
+    <span className="caret"></span>
+  </button>
+  <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="#">Action</a></li>
+    <li><a href="#">Another action</a></li>
+    <li><a href="#">Something else here</a></li>
+    <li role="separator" class="divider"></li>
+    <li><a href="#">Separated link</a></li>
+  </ul>
+</div>
+*/}

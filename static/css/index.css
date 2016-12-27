@@ -26,12 +26,12 @@ body {
 
 /* CategoryList */
 #app .CategoryList {
-  border: 1px solid blue;
+  /*border: 1px solid blue;*/
   display: block;
   text-align: center;
 }
 
-@media (min-width: 0px) and (max-width: 660px) {
+@media (min-width: 0px) and (max-width: 630px) {
   #app .CategoryList .btn{
     margin: 10px 5px 2px 5px;
   }
@@ -42,7 +42,7 @@ body {
   }
 }
 
-@media (min-width: 660px) {
+@media (min-width: 630px) {
   #app .CategoryList .btn{
     margin: 10px 5px;
   }
@@ -56,17 +56,96 @@ body {
 }
 /* SearchBar */
 #app .SearchBar {
-  border: 1px solid black;
+  /*border: 1px solid black;*/
+  padding: 2px;
+}
+
+@media (min-width: 0px) and (max-width: 660px) {
+  #app .SearchBar .input-group {
+    width: 90%;
+  }  
+}
+
+@media (min-width: 660px) {
+  #app .SearchBar .input-group {
+    width: 636px;
+  }  
+}
+
+#app .SearchBar .input-group {
+  margin: 0 auto;
+}
+
+#app .SearchBar .input-group-addon {
+  background-color: transparent;
+  border: none;
+  padding-right: 4px;
+}
+
+#app .SearchBar .form-control {
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  border-radius: 0px;
+  padding-left: 6px;
+  box-shadow: none;
+}
+
+/* Display */
+#app .Display {
+  margin-top: 10px;
+}
+
+#app .Display .box  {
+  /*border: 1px solid black;*/
+  padding: 0px;
+}
+
+@media (min-width: 0px) and (max-width: 970px){
+  #app .Display .RegionList {
+    text-align: center;
+  }
+}
+
+@media (min-width: 970px) {
+  #app .Display .RegionList {
+    text-align: right;
+  }
+}
+
+#app .Display .RegionList .btn{
+  font-size: 14px;
+  padding: 5px 15px;
+  text-align: left;
+  border-radius: 15px;
+  margin: 5px 5px;
+  font-size: 12px;
 }
 
 /* JakartaMap */
+#app .JakartaMap {
+  /*margin: 0 auto;*/
+}
+
+@media (min-width: 970px) and (max-width: 1240px){
+  #app .JakartaMap {
+    width: 475px;
+  }  
+}
+
+@media (min-width: 1240px) {
+  #app .JakartaMap {
+    width: 580px;
+  }  
+}
+
 #app .JakartaMap svg {
   fill: #FFFFFF;
 }
 
 #app .JakartaMap path {
-  stroke: #646464;
-  stroke-width: 1px;
+  stroke: #ff8383;
+  stroke-width: 3px;
   stroke-dasharray: 2,2;
   stroke-linejoin: round;
 }
