@@ -17,13 +17,6 @@ body {
   color: #000000;
 }
 
-/* InfoBar */
-@media (min-width: 768px) {
-  #app .InfoBar .container {
-    max-width: 1324px;
-  }
-}
-
 /* CategoryList */
 #app .CategoryList {
   /*border: 1px solid blue;*/
@@ -54,26 +47,20 @@ body {
   text-align: left;
   border-radius: 15px;
 }
+
 /* SearchBar */
 #app .SearchBar {
   /*border: 1px solid black;*/
-  padding: 2px;
-}
-
-@media (min-width: 0px) and (max-width: 660px) {
-  #app .SearchBar .input-group {
-    width: 90%;
-  }  
-}
-
-@media (min-width: 660px) {
-  #app .SearchBar .input-group {
-    width: 636px;
-  }  
+  padding: 2px 2px 2px 50px;
 }
 
 #app .SearchBar .input-group {
-  margin: 0 auto;
+  width: 90%;
+}  
+
+#app .SearchBar .input-group {
+  margin: 0 5px 0 auto;
+  /*margin: 0px;*/
 }
 
 #app .SearchBar .input-group-addon {
@@ -101,19 +88,30 @@ body {
   padding: 0px;
 }
 
-@media (min-width: 0px) and (max-width: 970px){
-  #app .Display .RegionList {
+#app .Display .region-box  {
+  /*border: 1px solid black;*/
+  /*padding-left: 20px;*/
+  /*padding-top: 5px;*/
+}
+
+#app .RegionList {
+  padding-left: 50px;
+}
+
+/* RegionList */
+@media (min-width: 0px) and (max-width: 990px){
+  #app .RegionList {
     text-align: center;
   }
 }
 
-@media (min-width: 970px) {
-  #app .Display .RegionList {
+@media (min-width: 990px) {
+  #app .RegionList {
     text-align: right;
   }
 }
 
-#app .Display .RegionList .btn{
+#app .RegionList .btn{
   font-size: 14px;
   padding: 5px 15px;
   text-align: left;
@@ -123,19 +121,15 @@ body {
 }
 
 /* JakartaMap */
-#app .JakartaMap {
-  /*margin: 0 auto;*/
-}
-
 @media (min-width: 970px) and (max-width: 1240px){
   #app .JakartaMap {
-    width: 475px;
+    width: 500px;
   }  
 }
 
 @media (min-width: 1240px) {
   #app .JakartaMap {
-    width: 580px;
+    width: 610px;
   }  
 }
 

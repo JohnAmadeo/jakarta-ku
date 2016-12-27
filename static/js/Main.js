@@ -11,7 +11,7 @@ class Main extends React.Component {
     return (
       <div className='Main'>
         <Header />
-        <InfoBar />
+        <CategoryList />
         <Display />
         {/*<ChartList />*/}
       </div>
@@ -29,22 +29,6 @@ const Header = (props) => {
       </nav>
     </div>
   )
-}
-
-class InfoBar extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return (
-      <div className="InfoBar">
-        <div className="container">
-          <CategoryList />
-          <SearchBar />
-        </div>
-      </div>
-    )
-  }
 }
 
 class CategoryList extends React.Component {
@@ -79,7 +63,7 @@ class SearchBar extends React.Component {
     super(props);
   }
   render() {
-    var placeholder = "Di kecamatan manakah letak lokasi ini?";
+    var placeholder = "Pilih kecamatan dimana lokasi ini terletak";
     return (
       <div className="SearchBar"> 
         <div className="input-group">
@@ -99,7 +83,8 @@ class Display extends React.Component {
   render() {
     return (
       <div className="Display">
-        <div className="box col-md-6">
+        <div className="box region-box col-md-6">
+          <SearchBar />
           <RegionList />
         </div>
         <div className="box col-md-6">
@@ -118,8 +103,8 @@ class RegionList extends React.Component {
     var regionList = ['Cakung','Cempaka Putih','Cengkareng','Cilandak','Cilincing','Cipayung','Ciracas','Duren Sawit','Gambir','Grogol Petamburan','Jagakarsa','Jatinegara','Johar Baru','Kali Deres','Kebayoran Baru','Kebayoran Lama','Kebon Jeruk','Kelapa Gading','Kemayoran','Kembangan','Koja','Kramat Jati','Makasar','Mampang Prapatan','Matraman','Menteng','Pademangan','Palmerah','Pancoran','Pasar Minggu','Pasar Rebo','Penjaringan','Pesanggrahan','Pulo Gadung','Sawah Besar','Senen','Setia Budi','Taman Sari','Tambora','Tanah Abang','Tanjung Priok','Tebet'];
     return (
       <div className="RegionList"> 
-        {regionList.map((region) => (
-          <Region name={region} />
+        {regionList.map((region, index) => (
+          <Region name={region} key={index}/>
         ))}
       </div>
     )
