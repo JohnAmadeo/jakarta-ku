@@ -137,19 +137,19 @@ body {
   }  
 }
 
-#app .JakartaMap svg {
+/*#app .JakartaMap svg {
   fill: #FFFFFF;
-}
+}*/
 
 #app .JakartaMap path {
-  stroke: #ff8383;
   stroke-width: 3px;
   stroke-dasharray: 2,2;
   stroke-linejoin: round;
 }
 
 #app .JakartaMap path:hover {
-  fill: #ff8383;
+  fill: #FF8383;
+  /*stroke: #000000;*/
 }
 
 /* DataDisplay */

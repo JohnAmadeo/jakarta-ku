@@ -3,12 +3,16 @@ import ReactDOM from 'react-dom'
 import Store from 'store2';
 import JakartaMap from './JakartaMap';
 import Translator from './translator';
+import ButtonPlus from './ButtonPlus';
 
 class Main extends React.Component {
   constructor(props) {
     super(props);
 
+    this.isCategorySelected = this.isCategorySelected.bind(this);
+    this.isRegionSelected = this.isRegionSelected.bind(this);
     this.onSelectCategory = this.onSelectCategory.bind(this);
+    this.onSelectRegion = this.onSelectRegion.bind(this);
 
     this.state = {
       category: "education",
@@ -17,30 +21,49 @@ class Main extends React.Component {
       selectedComparison: "region"
     }
   }
+  isCategorySelected(category) {
+    return this.state.category === category;
+  }
+  isRegionSelected(region) {
+    return this.state.selectedRegions.includes(region);
+  }
   onSelectCategory(category, event) {
     this.setState({
       category: category
     });
   }
+  onSelectRegion(region, event) {
+    const newSelectedRegions 
+      = this.state.selectedRegions.includes(region) ?
+        this.state.selectedRegions
+          .slice()
+          .filter((currRegion) => currRegion != region) :
+        [...this.state.selectedRegions, region];
+
+    this.setState({
+      selectedRegions: newSelectedRegions
+    })
+  }
   render() {
     return (
       <div className='Main'>
         <Header />
-        <CategoryBar category={this.state.category}
-                     onSelectCategory={this.onSelectCategory}/>
-        <MapDisplay />
+        <CategoryBar onSelectCategory={this.onSelectCategory}
+                     isCategorySelected={this.isCategorySelected} />
+        <MapDisplay onSelectRegion={this.onSelectRegion}
+                    isRegionSelected={this.isRegionSelected}/>
         <DataDisplay />
       </div>
     )
   }
 }
 
-{/*Main.propTypes = {
-  category: React.PropTypes.string.isRequired,
-  searchText: React.PropTypes.string.isRequired,
-  selectedRegions: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
-  selectedComparison: React.PropTypes.oneOf(["education", "region"]).isRequired  
-}*/}
+Main.propTypes = {
+  category: React.PropTypes.string,
+  searchText: React.PropTypes.string,
+  selectedRegions: React.PropTypes.arrayOf(React.PropTypes.string),
+  selectedComparison: React.PropTypes.oneOf(["education", "region"])
+}
 
 const Header = (props) => {
   return (
@@ -57,8 +80,6 @@ const Header = (props) => {
 class CategoryBar extends React.Component {
   constructor(props) {
     super(props);
-
-    this.renderButtonSymbol = this.renderButtonSymbol.bind(this);
     this.renderButtonList = this.renderButtonList.bind(this);
   }
   renderButtonList() {
@@ -67,23 +88,15 @@ class CategoryBar extends React.Component {
     return categoryListInIndo.map((categoryInIndo, index) => {
       const category = Translator.indoToEnglish(categoryInIndo);
       return (
-        <button 
-            type="button" className="btn btn-lg btn-default"
-            onClick={this.props.onSelectCategory.bind(this, category)} 
-            key={category}>
-
-          {this.renderButtonSymbol(category)} 
-          {categoryInIndo[0].toUpperCase() + categoryInIndo.substr(1)}
-        
-        </button>
+        <ButtonPlus 
+          onButtonClick={this.props.onSelectCategory
+                                   .bind(this, category)}
+          key={category}
+          isSelected={this.props.isCategorySelected(category)}
+          text={categoryInIndo[0].toUpperCase() + 
+                categoryInIndo.substr(1)} />
       )
     });
-  }
-  renderButtonSymbol(categoryInIndo) {
-    if(this.props.category === categoryInIndo) {
-      return (<span>&minus; &nbsp;</span>);
-    }
-    else return (<span>&#43; &nbsp;</span>);
   }
   render() {
     return (
@@ -121,10 +134,11 @@ class MapDisplay extends React.Component {
       <div className="MapDisplay row">
         <div className="col-md-6">
           <SearchBar />
-          <RegionList />
+          <RegionList onSelectRegion={this.props.onSelectRegion}
+                      isRegionSelected={this.props.isRegionSelected}/>
         </div>
         <div className="col-md-6">
-          <JakartaMap />
+          <JakartaMap isRegionSelected={this.props.isRegionSelected}/>
         </div>        
       </div>
     )
@@ -136,11 +150,13 @@ class RegionList extends React.Component {
     super(props);
   }
   render() {
-    const regionList = ['Cakung','Cempaka Putih','Cengkareng','Cilandak','Cilincing','Cipayung','Ciracas','Duren Sawit','Gambir','Grogol Petamburan','Jagakarsa','Jatinegara','Johar Baru','Kali Deres','Kebayoran Baru','Kebayoran Lama','Kebon Jeruk','Kelapa Gading','Kemayoran','Kembangan','Koja','Kramat Jati','Makasar','Mampang Prapatan','Matraman','Menteng','Pademangan','Palmerah','Pancoran','Pasar Minggu','Pasar Rebo','Penjaringan','Pesanggrahan','Pulo Gadung','Sawah Besar','Senen','Setia Budi','Taman Sari','Tambora','Tanah Abang','Tanjung Priok','Tebet'];
+    const regionList = ['cakung', 'cempaka putih', 'cengkareng', 'cilandak', 'cilincing', 'cipayung', 'ciracas', 'duren sawit', 'gambir', 'grogol petamburan', 'jagakarsa', 'jatinegara', 'johar baru', 'kalideres', 'kebayoran baru', 'kebayoran lama', 'kebon jeruk', 'kelapa gading', 'kemayoran', 'kembangan', 'koja', 'kramat jati', 'makasar', 'mampang prapatan', 'matraman', 'menteng', 'pademangan', 'palmerah', 'pancoran', 'pasar minggu', 'pasar rebo', 'penjaringan', 'pesanggrahan', 'pulo gadung', 'sawah besar', 'senen', 'setiabudi', 'taman sari', 'tambora', 'tanah abang', 'tanjung priok', 'tebet'];
     return (
       <div className="RegionList"> 
         {regionList.map((region, index) => (
-          <Region name={region} key={index}/>
+          <Region region={region} key={index}
+                  onSelectRegion={this.props.onSelectRegion}
+                  isRegionSelected={this.props.isRegionSelected}/>
         ))}
       </div>
     )
@@ -150,12 +166,21 @@ class RegionList extends React.Component {
 class Region extends React.Component {
   constructor(props) {
     super(props);
+    this.capitalizeName = this.capitalizeName.bind(this);
+  }
+  capitalizeName(name) {
+    return name.split(' ')
+               .map((word) => word[0].toUpperCase() + word.substr(1))
+               .join(' ');
   }
   render() {
     return (
-      <button type="button" className="btn btn-lg btn-default">
-        &#43; {this.props.name}
-      </button>
+      <ButtonPlus 
+        onButtonClick={this.props.onSelectRegion
+                                 .bind(this, this.props.region)} 
+        key={this.props.key}
+        isSelected={this.props.isRegionSelected(this.props.region)}
+        text={this.capitalizeName(this.props.region)} />
     )
   }
 }
