@@ -5,10 +5,8 @@ import ReactDOM from 'react-dom'
   - onButtonClick (function)
     event handler function executed when button
     is clicked    
-
   - selected (boolean)
     true if button is selected; false otherwise
-
   - text (string)
     text the button should display
 */}
