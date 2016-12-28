@@ -2,10 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom'
 import Store from 'store2';
 import JakartaMap from './JakartaMap';
+import Translator from './translator';
 
 class Main extends React.Component {
   constructor(props) {
     super(props);
+
+    this.onSelectCategory = this.onSelectCategory.bind(this);
 
     this.state = {
       category: "education",
@@ -14,11 +17,17 @@ class Main extends React.Component {
       selectedComparison: "region"
     }
   }
+  onSelectCategory(category, event) {
+    this.setState({
+      category: category
+    });
+  }
   render() {
     return (
       <div className='Main'>
         <Header />
-        <CategoryBar category={this.state.category}/>
+        <CategoryBar category={this.state.category}
+                     onSelectCategory={this.onSelectCategory}/>
         <MapDisplay />
         <DataDisplay />
       </div>
@@ -49,7 +58,6 @@ class CategoryBar extends React.Component {
   constructor(props) {
     super(props);
 
-    this.indoToEnglish = this.indoToEnglish.bind(this);
     this.renderButtonSymbol = this.renderButtonSymbol.bind(this);
     this.renderButtonList = this.renderButtonList.bind(this);
   }
@@ -57,32 +65,25 @@ class CategoryBar extends React.Component {
     const categoryListInIndo = ['pendidikan', 'demografi', 'agama',
                                 'pekerjaan', 'pernikahan'];
     return categoryListInIndo.map((categoryInIndo, index) => {
-      const category = this.indoToEnglish(categoryInIndo);
+      const category = Translator.indoToEnglish(categoryInIndo);
       return (
-        <button type="button" className="btn btn-lg btn-default"
-                onClick={this.props.onSelectCategory} key={index}>
+        <button 
+            type="button" className="btn btn-lg btn-default"
+            onClick={this.props.onSelectCategory.bind(this, category)} 
+            key={category}>
+
           {this.renderButtonSymbol(category)} 
           {categoryInIndo[0].toUpperCase() + categoryInIndo.substr(1)}
+        
         </button>
       )
     });
   }
   renderButtonSymbol(categoryInIndo) {
-    console.log(categoryInIndo);
     if(this.props.category === categoryInIndo) {
       return (<span>&minus; &nbsp;</span>);
     }
     else return (<span>&#43; &nbsp;</span>);
-  }
-  indoToEnglish(categoryInIndo) {
-    const translation = {
-      pendidikan: 'education',
-      demografi: 'demographics',
-      agama: 'religion',
-      pekerjaan: 'occupation',
-      pernikahan: 'marriage'
-    }
-    return translation[categoryInIndo];
   }
   render() {
     return (
