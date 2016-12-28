@@ -1,6 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 
+{/* To-do 
+  - Abstract JakartaMap into a stateless lower-level SVG component
+    that handles UI by taking in path descriptions as props; and a
+    a higher level 'JakartaMap' component to handle logic of updating
+    selected regions state
+*/}
+
+{/* Props
+  - onSelectRegion (function)
+    event handler function that updates the state
+    of the currently selected regions
+*/}
 class JakartaMap extends React.Component {
   constructor(props) {
     super(props);
