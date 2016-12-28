@@ -18,7 +18,7 @@ class Main extends React.Component {
     return (
       <div className='Main'>
         <Header />
-        <CategoryBar />
+        <CategoryBar category={this.state.category}/>
         <MapDisplay />
         <DataDisplay />
       </div>
@@ -26,12 +26,12 @@ class Main extends React.Component {
   }
 }
 
-Main.propTypes = {
+{/*Main.propTypes = {
   category: React.PropTypes.string.isRequired,
   searchText: React.PropTypes.string.isRequired,
   selectedRegions: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
   selectedComparison: React.PropTypes.oneOf(["education", "region"]).isRequired  
-}
+}*/}
 
 const Header = (props) => {
   return (
@@ -48,28 +48,49 @@ const Header = (props) => {
 class CategoryBar extends React.Component {
   constructor(props) {
     super(props);
+
+    this.indoToEnglish = this.indoToEnglish.bind(this);
+    this.renderButtonSymbol = this.renderButtonSymbol.bind(this);
+    this.renderButtonList = this.renderButtonList.bind(this);
+  }
+  renderButtonList() {
+    const categoryListInIndo = ['pendidikan', 'demografi', 'agama',
+                                'pekerjaan', 'pernikahan'];
+    return categoryListInIndo.map((categoryInIndo, index) => {
+      const category = this.indoToEnglish(categoryInIndo);
+      return (
+        <button type="button" className="btn btn-lg btn-default"
+                onClick={this.props.onSelectCategory} key={index}>
+          {this.renderButtonSymbol(category)} 
+          {categoryInIndo[0].toUpperCase() + categoryInIndo.substr(1)}
+        </button>
+      )
+    });
+  }
+  renderButtonSymbol(categoryInIndo) {
+    console.log(categoryInIndo);
+    if(this.props.category === categoryInIndo) {
+      return (<span>&minus; &nbsp;</span>);
+    }
+    else return (<span>&#43; &nbsp;</span>);
+  }
+  indoToEnglish(categoryInIndo) {
+    const translation = {
+      pendidikan: 'education',
+      demografi: 'demographics',
+      agama: 'religion',
+      pekerjaan: 'occupation',
+      pernikahan: 'marriage'
+    }
+    return translation[categoryInIndo];
   }
   render() {
     return (
       <div className="CategoryBar">
-        <button type="button" className="btn btn-lg btn-default">
-          &#43; Pendidikan
-        </button>
-        <button type="button" className="btn btn-lg btn-default">
-          &minus; Demografi
-        </button>
-        <button type="button" className="btn btn-lg btn-default">
-          &#43; Agama
-        </button>
-        <button type="button" className="btn btn-lg btn-default">
-          &#43; Pekerjaan
-        </button>
-        <button type="button" className="btn btn-lg btn-default">
-          &#43; Pernikahan
-        </button>
+        {this.renderButtonList()}
       </div>
     )
-  }
+  } 
 }
 
 class SearchBar extends React.Component {
