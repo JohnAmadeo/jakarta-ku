@@ -137,10 +137,6 @@ body {
   }  
 }
 
-/*#app .JakartaMap svg {
-  fill: #FFFFFF;
-}*/
-
 #app .JakartaMap path {
   stroke-width: 3px;
   stroke-dasharray: 2,2;

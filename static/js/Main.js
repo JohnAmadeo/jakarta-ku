@@ -11,25 +11,30 @@ class Main extends React.Component {
 
     this.isCategorySelected = this.isCategorySelected.bind(this);
     this.isRegionSelected = this.isRegionSelected.bind(this);
+    this.isComparisonSelected = this.isComparisonSelected.bind(this);
     this.onSelectCategory = this.onSelectCategory.bind(this);
     this.onSelectRegion = this.onSelectRegion.bind(this);
+    this.onSelectComparison = this.onSelectComparison.bind(this);
 
     this.state = {
-      category: "education",
+      selectedCategory: "education",
       searchText: "",
       selectedRegions: [],
-      selectedComparison: "region"
+      selectedComparison: "category"
     }
   }
   isCategorySelected(category) {
-    return this.state.category === category;
+    return this.state.selectedCategory === category;
   }
   isRegionSelected(region) {
     return this.state.selectedRegions.includes(region);
   }
+  isComparisonSelected(comparison) {
+    return this.state.selectedComparison === comparison;
+  }
   onSelectCategory(category, event) {
     this.setState({
-      category: category
+      selectedCategory: category
     });
   }
   onSelectRegion(region, event) {
@@ -44,6 +49,11 @@ class Main extends React.Component {
       selectedRegions: newSelectedRegions
     })
   }
+  onSelectComparison(comparison, event) {
+    this.setState({
+      selectedComparison: comparison
+    })
+  }
   render() {
     return (
       <div className='Main'>
@@ -52,17 +62,18 @@ class Main extends React.Component {
                      isCategorySelected={this.isCategorySelected} />
         <MapDisplay onSelectRegion={this.onSelectRegion}
                     isRegionSelected={this.isRegionSelected}/>
-        <DataDisplay />
+        <DataDisplay onSelectComparison={this.onSelectComparison}
+                     isComparisonSelected={this.isComparisonSelected} />
       </div>
     )
   }
 }
 
 Main.propTypes = {
-  category: React.PropTypes.string,
+  selectedCategory: React.PropTypes.string,
   searchText: React.PropTypes.string,
   selectedRegions: React.PropTypes.arrayOf(React.PropTypes.string),
-  selectedComparison: React.PropTypes.oneOf(["education", "region"])
+  selectedComparison: React.PropTypes.oneOf(["category", "region"])
 }
 
 const Header = (props) => {
@@ -138,7 +149,8 @@ class MapDisplay extends React.Component {
                       isRegionSelected={this.props.isRegionSelected}/>
         </div>
         <div className="col-md-6">
-          <JakartaMap isRegionSelected={this.props.isRegionSelected}/>
+          <JakartaMap isRegionSelected={this.props.isRegionSelected}
+                      onSelectRegion={this.props.onSelectRegion}/>
         </div>        
       </div>
     )
@@ -193,7 +205,9 @@ class DataDisplay extends React.Component {
     return (
       <div className="DataDisplay">
         <div className="container">
-          <ComparisonBar />
+          <ComparisonBar 
+            onSelectComparison={this.props.onSelectComparison}
+            isComparisonSelected={this.props.isComparisonSelected} />
           <LoremIpsum />
           {/*<ChartList />*/}
         </div>
@@ -209,12 +223,16 @@ class ComparisonBar extends React.Component {
   render() {
     return (
       <div className="ComparisonBar">
-        <button type="button" className="btn btn-lg btn-default">
-          &#43; Bandingkan kategori
-        </button>
-        <button type="button" className="btn btn-lg btn-default">
-          &minus; Bandingkan kecamatan
-        </button>
+        <ButtonPlus 
+          key={1} text={"Bandingkan kategori"} 
+          isSelected={this.props.isComparisonSelected("category")}
+          onButtonClick={this.props.onSelectComparison
+                                   .bind(this, "category")}/>
+        <ButtonPlus 
+          key={2} text={"Bandingkan kecamatan"}
+          isSelected={this.props.isComparisonSelected("region")}
+          onButtonClick={this.props.onSelectComparison
+                                   .bind(this, "region")}/>
       </div>
     )
   }
