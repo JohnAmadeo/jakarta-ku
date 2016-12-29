@@ -1,6 +1,7 @@
 from __future__ import print_function
 from flask import Flask, render_template, request, redirect, make_response, Response
 from pymongo import MongoClient
+from fieldutils import get_field_stage
 import os, json
 
 app = Flask(__name__)
@@ -14,7 +15,7 @@ DATABASE = MongoClient().get_database('jakartaku')
 # 2. 
 
 def main():
-    serve_education_charts_by_region(['koja', 'tebet'])
+    serve_education_charts_by_category(['koja', 'tebet'])
 
 @app.route('/')
 def serve_index():
@@ -46,7 +47,7 @@ def serve_education_charts_by_category(region_list):
     # get list of all educational level fields
     edu_level_list = get_field_list(collection)
 
-    project_object = {}
+    project_object = {'_id': 1}
     for field in edu_level_list:
         project_object[field] = 1
 
@@ -79,26 +80,45 @@ def serve_education_charts_by_category(region_list):
         "$project": {"_id": 0}
     }])
 
-    quantity_data = None    
+    quantity_data = []    
     for document in cursor:
-        quantity_data = document
+        for field in document:
+            quantity_data.append(
+                {
+                    'field': field,
+                    'value': document[field],
+                    "edu_level": get_field_stage('education', field) 
+                }
+            )
+        # quantity_data = document
+
     quantity_chart = {'field': 'quantity', 'chart': 'bar', 
-                      'data': quantity_data}
+                      'data': sorted(quantity_data, 
+                                     key=lambda x: x['edu_level'])}
+    for data_unit in quantity_chart['data']:
+        data_unit.pop('edu_level')
+    # jsonprint(quantity_chart)
 
     # get total number of people counted in slice of dataset
     total_people = 0
-    for key in quantity_data.keys():
-        total_people += quantity_data[key]
+    for data_unit in quantity_chart['data']:
+        total_people += data_unit['value']
 
-    # calculate the number of people in each educational level
-    # field as a percentage of the total number of people
-    percentage_data = quantity_data.copy()
-    for key in percentage_data.keys():
-        percentage = percentage_data[key] / total_people
+    # # calculate the number of people in each educational level
+    # # field as a percentage of the total number of people
+    percentage_data = [] 
+    for data_unit in quantity_chart['data']:
+        percentage = data_unit['value'] / total_people
         num_decimals = 2
         while round(percentage, num_decimals) == 0:
             num_decimals += 1
-        percentage_data[key] = round(percentage, num_decimals)
+        percentage_data.append(
+            {
+                'field': data_unit['field'],
+                'value': round(percentage, num_decimals)
+            }
+        )
+
     percentage_chart = {'field': 'percentage', 'chart': 'pie', 
                         'data': percentage_data}
 
@@ -121,6 +141,8 @@ def serve_education_charts_by_region(region_list):
     edu_level_list = get_field_list(collection)
     for edu_level in edu_level_list:
         group_object = {"_id": "null"}
+        project_object = {"_id": 0}
+
         for region in region_list:
             group_object[region] = \
             {
@@ -131,6 +153,7 @@ def serve_education_charts_by_region(region_list):
                     }
                 }
             }
+            project_object[region] = 1
 
         cursor = \
         collection.aggregate([{
@@ -143,7 +166,7 @@ def serve_education_charts_by_region(region_list):
             "$group": group_object
         },
         {
-            "$project": {"_id": 0}
+            "$project": project_object
         }])        
 
         field_data = None
@@ -152,24 +175,31 @@ def serve_education_charts_by_region(region_list):
 
         chart_list.append({
             "field": edu_level,
-            "data": field_data    
+            "data": field_data,
+            "edu_level": get_field_stage('education', edu_level) 
         })
 
-    chart_list = sorted(chart_list, key=lambda chart: chart['field'])
+    chart_list = sorted(chart_list, 
+                        key=lambda chart: chart['edu_level'])
     for chart in chart_list:
+        chart.pop('edu_level')
         jsonprint(chart)
-   
+
+    return Response(response=json.dumps({'chart_list': chart_list}), 
+                   status=200, 
+                   mimetype='application/json')       
 
 def get_field_list(collection):
     """
     Get list of all non-spacetime fields in a standard 
     collection document
     """
-    # list all space/time fields in document
-    spacetime_list = ['Kecamatan', 'Kabupaten', 'Kelurahan', 'Tahun']
+    # list all space/time/id fields in document
+    spacetimeid_list = ['Kecamatan', 'Kabupaten', 'Kelurahan', 
+                        'Tahun', "_id"]
     # list all education level fields
     return [field for field in list(collection.find_one().keys()) 
-            if field not in spacetime_list]
+            if field not in spacetimeid_list]
 
 def jsonprint(obj):
     """Prints Mongo document i.e Python object 
