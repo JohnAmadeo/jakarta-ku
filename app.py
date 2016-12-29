@@ -6,7 +6,6 @@ import os, json
 app = Flask(__name__)
 # Constants
 DATABASE = MongoClient().get_database('jakartaku')
-ID_LIST = ['Kecamatan', 'Kabupaten', 'Kelurahan', 'Tahun', '_id']
 
 # Naming conventions
 # ------------------------------------
@@ -15,7 +14,7 @@ ID_LIST = ['Kecamatan', 'Kabupaten', 'Kelurahan', 'Tahun', '_id']
 # 2. 
 
 def main():
-    serve_education_charts_by_category(['koja'])
+    serve_education_charts_by_region(['koja', 'tebet'])
 
 @app.route('/')
 def serve_index():
@@ -28,8 +27,11 @@ def serve_charts():
     region_list = body['region_list']
     category = body['category']
 
-    if category == 'education' and comparison == "category": 
-        return serve_education_charts_by_category(region_list)
+    if category == 'education':
+        if comparison == "category": 
+            return serve_education_charts_by_category(region_list)
+        elif comparison == "region":
+            return serve_education_charts_by_region(region_list)
 
 def serve_education_charts_by_category(region_list):
     global DATABASE
@@ -41,11 +43,9 @@ def serve_education_charts_by_category(region_list):
 
     # Handle $project stage
     # ----------------------
-    # list all space/time fields in document
-    spacetime_list = ['Kecamatan', 'Kabupaten', 'Kelurahan', 'Tahun']
-    # list all education level fields
-    edu_level_list = [field for field in list(collection.find_one().keys()) 
-                    if field not in spacetime_list]
+    # get list of all educational level fields
+    edu_level_list = get_field_list(collection)
+
     project_object = {}
     for field in edu_level_list:
         project_object[field] = 1
@@ -108,6 +108,68 @@ def serve_education_charts_by_category(region_list):
                                                         percentage_chart]}), 
                    status=200, 
                    mimetype='application/json')
+
+def serve_education_charts_by_region(region_list):
+    global DATABASE
+    collection = DATABASE.get_collection('education')
+    chart_list = []
+
+    # Handle $match stage
+    # ----------------------
+    match_list = [{"Kecamatan": region} for region in region_list]
+
+    edu_level_list = get_field_list(collection)
+    for edu_level in edu_level_list:
+        group_object = {"_id": "null"}
+        for region in region_list:
+            group_object[region] = \
+            {
+                "$sum": {
+                    "$cond" : {
+                        "if": {"$eq": ["$Kecamatan", region]},
+                        "then": "$" + edu_level, "else": 0
+                    }
+                }
+            }
+
+        cursor = \
+        collection.aggregate([{
+            "$match": {"$or": match_list}
+        }, 
+        {
+            "$project": {"_id" : 1, "Kecamatan" : 1, edu_level : 1}
+        },
+        {
+            "$group": group_object
+        },
+        {
+            "$project": {"_id": 0}
+        }])        
+
+        field_data = None
+        for result in cursor:
+            field_data = result
+
+        chart_list.append({
+            "field": edu_level,
+            "data": field_data    
+        })
+
+    chart_list = sorted(chart_list, key=lambda chart: chart['field'])
+    for chart in chart_list:
+        jsonprint(chart)
+   
+
+def get_field_list(collection):
+    """
+    Get list of all non-spacetime fields in a standard 
+    collection document
+    """
+    # list all space/time fields in document
+    spacetime_list = ['Kecamatan', 'Kabupaten', 'Kelurahan', 'Tahun']
+    # list all education level fields
+    return [field for field in list(collection.find_one().keys()) 
+            if field not in spacetime_list]
 
 def jsonprint(obj):
     """Prints Mongo document i.e Python object 
