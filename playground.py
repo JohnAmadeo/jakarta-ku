@@ -53,6 +53,41 @@ def main(num):
                                {"Kecamatan": "kebon jeruk"}]}
         }, 
         {
+            "$project": {"_id" : 1, "Kecamatan" : 1, "SD" : 1}
+        },
+        {
+            "$group": {"_id": "null", 
+                       "tebet": {"$sum": {
+                            "$cond" : {
+                                "if": {"$eq": ["$Kecamatan", "tebet"]},
+                                "then": "$SD", "else": 0
+                            }
+                       }},
+                       "kebon_jeruk": {"$sum": {
+                            "$cond" : {
+                                "if": {"$eq": ["$Kecamatan", "kebon jeruk"]},
+                                "then": "$SD", "else": 0
+                            }
+                       }}}
+        },
+        {
+            "$project": {"_id": 0}
+        }])
+
+
+        for result in cursor:
+            # print({result['_id']: })
+            jsonprint(result)
+
+    elif num == 3:
+        # Number of citizens who have completed each education level
+        # for all the regions selected
+        cursor = \
+        col.aggregate([{
+            "$match": {"$or": [{"Kecamatan": "tebet"},
+                               {"Kecamatan": "kebon jeruk"}]}
+        }, 
+        {
             "$project": {"_id" : 1, "Kecamatan" : 1, "SD" : 1, 
                          "SMA": 1, "S1": 1, "S3": 1}
         },
@@ -63,9 +98,9 @@ def main(num):
         }])
 
         for result in cursor:
-            docprint(result)
+            jsonprint(result)
 
-    elif num == 3:
+    elif num == 4:
         # Number of citizens who have completed SD per region 
         # in ascending order of kecamatan name
         cursor = col.aggregate([{
@@ -95,5 +130,5 @@ def jsonprint(obj):
 
 
 if __name__ == "__main__":
-    main(1)
+    main(2)
 
