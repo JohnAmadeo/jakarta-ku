@@ -1,7 +1,7 @@
 from __future__ import print_function
 from flask import Flask, render_template, request, redirect, make_response, Response
 from pymongo import MongoClient
-from fieldutils import get_field_stage
+from fieldutils import get_field_stage, get_field_list
 import os, json
 
 app = Flask(__name__)
@@ -189,17 +189,6 @@ def serve_education_charts_by_region(region_list):
                    status=200, 
                    mimetype='application/json')       
 
-def get_field_list(collection):
-    """
-    Get list of all non-spacetime fields in a standard 
-    collection document
-    """
-    # list all space/time/id fields in document
-    spacetimeid_list = ['Kecamatan', 'Kabupaten', 'Kelurahan', 
-                        'Tahun', "_id"]
-    # list all education level fields
-    return [field for field in list(collection.find_one().keys()) 
-            if field not in spacetimeid_list]
 
 def jsonprint(obj):
     """Prints Mongo document i.e Python object 
