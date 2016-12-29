@@ -28,7 +28,11 @@ var utils = {
                'pasar rebo', 'penjaringan', 'pesanggrahan', 
                'pulo gadung', 'sawah besar', 'senen', 'setiabudi', 
                'taman sari', 'tambora', 'tanah abang', 'tanjung priok', 
-               'tebet']
+               'tebet'],
+  getKeys: function() {
+    Object.keys(this).filter((key) => key != "getKeys")
+                     .map((key) => {console.log(key);})
+  }
 }
 
 module.exports = utils;
