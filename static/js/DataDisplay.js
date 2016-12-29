@@ -1,12 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import Store from 'store2';
+
 import JakartaMap from './JakartaMap';
 import Button from './Button';
+import ChartList from './ChartList';
 
 {/* Props
   - selectedCategory (string)
     name of currently selected category
+
+  - selectedRegionList (array of strings)
+    array of names of all currently selected regions
 */}
 class DataDisplay extends React.Component {
   constructor(props) {
@@ -30,6 +35,10 @@ class DataDisplay extends React.Component {
             onSelectComparison={this.onSelectComparison}
             selectedComparison={this.state.selectedComparison} />
           <LoremIpsum />
+          <ChartList 
+            selectedCategory={this.props.selectedCategory}
+            selectedComparison={this.state.selectedComparison}
+            selectedRegionList={this.props.selectedRegionList}/>
         </div>
       </div>
     )

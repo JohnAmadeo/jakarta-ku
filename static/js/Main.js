@@ -44,10 +44,13 @@ class Main extends React.Component {
         <CategoryBar onSelectCategory={this.onSelectCategory}
                      selectedCategory={this.state.selectedCategory}/>
 
-        <MapDisplay onSelectRegion={this.onSelectRegion}
-                    selectedRegionList = {this.state.selectedRegionList}/>
+        <MapDisplay 
+          onSelectRegion={this.onSelectRegion}
+          selectedRegionList = {this.state.selectedRegionList}/>
 
-        <DataDisplay selectedCategory={this.state.selectedCategory} />
+        <DataDisplay 
+          selectedCategory={this.state.selectedCategory}
+          selectedRegionList = {this.state.selectedRegionList}/>
       </div>
     )
   }
