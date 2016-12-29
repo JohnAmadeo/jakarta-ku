@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import Store from 'store2';
+import Utils from './utils';
+
 import JakartaMap from './JakartaMap';
 import Button from './Button';
 
@@ -71,10 +73,9 @@ class RegionList extends React.Component {
     super(props);
   }
   render() {
-    const regionList = ['cakung', 'cempaka putih', 'cengkareng', 'cilandak', 'cilincing', 'cipayung', 'ciracas', 'duren sawit', 'gambir', 'grogol petamburan', 'jagakarsa', 'jatinegara', 'johar baru', 'kalideres', 'kebayoran baru', 'kebayoran lama', 'kebon jeruk', 'kelapa gading', 'kemayoran', 'kembangan', 'koja', 'kramat jati', 'makasar', 'mampang prapatan', 'matraman', 'menteng', 'pademangan', 'palmerah', 'pancoran', 'pasar minggu', 'pasar rebo', 'penjaringan', 'pesanggrahan', 'pulo gadung', 'sawah besar', 'senen', 'setiabudi', 'taman sari', 'tambora', 'tanah abang', 'tanjung priok', 'tebet'];
     return (
       <div className="RegionList"> 
-        {regionList.map((region, index) => (
+        {Utils.regionList.map((region, index) => (
           <Region region={region} key={index}
                   onSelectRegion={this.props.onSelectRegion}
                   isRegionSelected={this.props.isRegionSelected}/>

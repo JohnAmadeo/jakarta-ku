@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import Store from 'store2';
-import Translator from './translator';
+import Utils from './utils';
 
 import MapDisplay from './MapDisplay';
 import DataDisplay from './DataDisplay';
@@ -100,7 +100,7 @@ class CategoryBar extends React.Component {
     const categoryListInIndo = ['pendidikan', 'demografi', 'agama',
                                 'pekerjaan', 'pernikahan'];
     return categoryListInIndo.map((categoryInIndo, index) => {
-      const category = Translator.indoToEnglish(categoryInIndo);
+      const category = Utils.translate(categoryInIndo);
       return (
         <Button 
           onButtonClick={this.props.onSelectCategory
