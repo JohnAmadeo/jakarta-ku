@@ -1,6 +1,0 @@
-# execute 'chmod u+x' to make script executable if on new computer
-mongoimport --db jakartaku --collection education --type csv --file csv/education2014_clean.csv --headerline
-mongoimport --db jakartaku --collection marriage --type csv --file csv/marriage2015_clean.csv --headerline
-mongoimport --db jakartaku --collection religion --type csv --file csv/religion2013_clean.csv --headerline
-mongoimport --db jakartaku --collection occupation --type csv --file csv/occupation2013_clean.csv --headerline
-mongoimport --db jakartaku --collection demographics --type csv --file csv/demographics2013_clean.csv --headerline
