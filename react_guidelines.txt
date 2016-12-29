@@ -1,0 +1,14 @@
+State, Props, and Functions
+
+  • Functions that alter state must be declared in the component in which the state was initialized 
+  • Write stateful higher-level components and stateless lower-level components. (https://engineering.siftscience.com/best-practices-for-building-large-react-applications/) 
+  ◦ Stateless components provide reuse of UI rendering details, styles, and markup. 
+  ◦ Stateful wrapper components provide reuse of interaction logic. 
+  • State should be initialized in the youngest ancestor to all components who need access to the state
+
+Naming Conventions
+
+  • Arrays should have names ending with ‘...List’ e.g ‘nameList’, ‘regionList’ 
+  • Functions that are event handlers should start with ‘on…’ e.g ‘onSelectRegion’, ‘onUploadFile’ 
+  • Functions that return booleans i.e checking functions should start with ‘is…’ e.g ‘isRegionSelected’ 
+  • State or props that are booleans should be a past tense verb e.g ‘selected’, ‘hovered’ 
