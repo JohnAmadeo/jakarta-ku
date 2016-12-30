@@ -49,9 +49,6 @@ body {
 }
 
 /* SearchBar */
-/*#app .SearchBar {
-  padding: 2px 2px 2px 50px;
-}*/
 
 @media (min-width: 0px) and (max-width: 992px){
   #app .SearchBar .input-group {
@@ -87,6 +84,8 @@ body {
 /* MapDisplay */
 #app .MapDisplay {
   margin-top: 10px;
+  margin-right: 0px;
+  margin-left: 0px; 
 }
 
 #app .MapDisplay .col-md-6  {
@@ -104,7 +103,7 @@ body {
 @media (min-width: 992px) {
   #app .RegionList {
     text-align: right;
-    padding-left: 50px;
+    padding-left: 30px;
   }
 }
 
