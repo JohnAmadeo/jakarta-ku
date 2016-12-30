@@ -23,6 +23,7 @@ def serve_index():
 
 @app.route('/charts', methods=['POST'])
 def serve_charts():
+    print("create new chart")
     body = request.get_json()
     comparison = body['comparison']
     region_list = body['region_list']
@@ -92,7 +93,7 @@ def serve_education_charts_by_category(region_list):
             )
         # quantity_data = document
 
-    quantity_chart = {'field': 'quantity', 'chart': 'bar', 
+    quantity_chart = {'field': 'quantity', 'chart_type': 'column', 
                       'data': sorted(quantity_data, 
                                      key=lambda x: x['edu_level'])}
     for data_unit in quantity_chart['data']:
@@ -119,7 +120,7 @@ def serve_education_charts_by_category(region_list):
             }
         )
 
-    percentage_chart = {'field': 'percentage', 'chart': 'pie', 
+    percentage_chart = {'field': 'percentage', 'chart_type': 'pie', 
                         'data': percentage_data}
 
     jsonprint({'chart_list': [quantity_chart, percentage_chart]})
@@ -183,12 +184,11 @@ def serve_education_charts_by_region(region_list):
                         key=lambda chart: chart['edu_level'])
     for chart in chart_list:
         chart.pop('edu_level')
-        jsonprint(chart)
+        # jsonprint(chart)
 
     return Response(response=json.dumps({'chart_list': chart_list}), 
-                   status=200, 
-                   mimetype='application/json')       
-
+                    status=200, 
+                    mimetype='application/json')       
 
 def jsonprint(obj):
     """Prints Mongo document i.e Python object 
@@ -201,6 +201,6 @@ def jsonprint(obj):
         print(json.dumps(obj_copy, sort_keys=True, indent=4))
 
 if __name__ == '__main__':
-    main()
-    # port = int(os.environ.get('PORT', 5000))
-    # app.run(host='0.0.0.0', port=port)    
+    # main()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)    

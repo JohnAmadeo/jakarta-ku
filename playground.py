@@ -63,7 +63,7 @@ def main(num):
                                 "then": "$SD", "else": 0
                             }
                        }},
-                       "kebon_jeruk": {"$sum": {
+                       "kebon jeruk": {"$sum": {
                             "$cond" : {
                                 "if": {"$eq": ["$Kecamatan", "kebon jeruk"]},
                                 "then": "$SD", "else": 0
@@ -71,7 +71,7 @@ def main(num):
                        }}}
         },
         {
-            "$project": {"_id": 0}
+            "$project": {"_id": 0, "tebet": 1, "kebon jeruk": 1, "lol": {"$literal": 6}}
         }])
 
 
