@@ -34,6 +34,9 @@ def serve_charts():
             return serve_education_charts_by_category(region_list)
         elif comparison == "region":
             return serve_education_charts_by_region(region_list)
+    elif category == 'occupation':
+        if comparsion == "category":
+            return serve_occupation_charts_by_category(region_list)
 
 def serve_education_charts_by_category(region_list):
     global DATABASE
@@ -83,44 +86,44 @@ def serve_education_charts_by_category(region_list):
 
     quantity_data = []    
     for document in cursor:
+        jsonprint(document)
         for field in document:
             quantity_data.append(
-                {
-                    'field': field,
-                    'value': document[field],
-                    "edu_level": get_field_stage('education', field) 
-                }
+                [
+                    field,
+                    document[field],
+                    {"edu_level": get_field_stage('education', field)} 
+                ]
             )
-        # quantity_data = document
 
-    quantity_chart = {'field': 'quantity', 'chart_type': 'column', 
+    quantity_chart = {'label': 'quantity', 'chart_type': 'bar',
+                      'xtitle': 'Jumlah Orang',  
+                      'ytitle': 'Tingkat Pendidikan',
                       'data': sorted(quantity_data, 
-                                     key=lambda x: x['edu_level'])}
+                                     key=lambda x: x[2]['edu_level'])}
     for data_unit in quantity_chart['data']:
-        data_unit.pop('edu_level')
+        data_unit.pop()
     # jsonprint(quantity_chart)
 
     # get total number of people counted in slice of dataset
     total_people = 0
     for data_unit in quantity_chart['data']:
-        total_people += data_unit['value']
+        total_people += data_unit[1]
 
     # # calculate the number of people in each educational level
     # # field as a percentage of the total number of people
     percentage_data = [] 
     for data_unit in quantity_chart['data']:
-        percentage = data_unit['value'] / total_people
+        percentage = data_unit[1] / total_people
         num_decimals = 2
         while round(percentage, num_decimals) == 0:
             num_decimals += 1
-        percentage_data.append(
-            {
-                'field': data_unit['field'],
-                'value': round(percentage, num_decimals)
-            }
-        )
+        percentage_data.append([data_unit[0], 
+                                round(percentage, num_decimals)])
 
-    percentage_chart = {'field': 'percentage', 'chart_type': 'pie', 
+    percentage_chart = {'label': 'percentage', 'chart_type': 'pie',
+                        'xtitle': 'Tingkat Pendidikan', 
+                        'ytitle': 'Persentase Orang', 
                         'data': percentage_data}
 
     jsonprint({'chart_list': [quantity_chart, percentage_chart]})
@@ -189,6 +192,9 @@ def serve_education_charts_by_region(region_list):
     return Response(response=json.dumps({'chart_list': chart_list}), 
                     status=200, 
                     mimetype='application/json')       
+
+def serve_occupation_charts_by_category(region_list):
+    return 5
 
 def jsonprint(obj):
     """Prints Mongo document i.e Python object 
