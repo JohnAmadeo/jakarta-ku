@@ -5,17 +5,10 @@ from fieldutils import get_field_stage, get_field_list
 import os, json
 
 app = Flask(__name__)
-# Constants
 DATABASE = MongoClient().get_database('jakartaku')
 
-# Naming conventions
-# ------------------------------------
-# 1. Lists have names that end with '..._l'
-#    e.g 'car_l', 'animal_l', 'winner_l'
-# 2. 
-
 def main():
-    serve_education_charts_by_category(['koja', 'tebet'])
+    serve_occupation_charts_by_field(['koja', 'tebet'])
 
 @app.route('/')
 def serve_index():
@@ -30,15 +23,15 @@ def serve_charts():
     category = body['category']
 
     if category == 'education':
-        if comparison == "category": 
-            return serve_education_charts_by_category(region_list)
+        if comparison == "field": 
+            return serve_education_charts_by_field(region_list)
         elif comparison == "region":
             return serve_education_charts_by_region(region_list)
     elif category == 'occupation':
-        if comparsion == "category":
-            return serve_occupation_charts_by_category(region_list)
+        if comparison == "field":
+            return serve_occupation_charts_by_field(region_list)
 
-def serve_education_charts_by_category(region_list):
+def serve_education_charts_by_field(region_list):
     global DATABASE
     collection = DATABASE.get_collection('education')
 
@@ -52,37 +45,29 @@ def serve_education_charts_by_category(region_list):
     edu_level_list = get_field_list(collection)
 
     project_object = {'_id': 1}
-    for field in edu_level_list:
-        project_object[field] = 1
+    for edu_level in edu_level_list:
+        project_object[edu_level] = 1
 
     # Handle $group stage
     # ----------------------    
     group_object = {"_id": "null"}
-    for field in edu_level_list:
-        if field != "_id":
-            group_object[field] = {"$sum" : ("$" + field)}
+    for edu_level in edu_level_list:
+        group_object[edu_level] = {"$sum" : ("$" + edu_level)}
 
     cursor = \
     collection.aggregate([
-    # Search only documents whose regions are in the selected
-    # regions list
-    {
-        "$match": {"$or": match_list}
-    }, 
-    # Show only id and educational level fields
-    {
-        "$project": project_object
-    },
-    # Sum the total number of people that fall into each 
-    # of the educational level fields across all the selected
-    # regions
-    {
-        "$group": group_object
-    },
-    # Remove id field
-    {
-        "$project": {"_id": 0}
-    }])
+        # Search only documents whose regions are in the selected
+        # regions list
+        {"$match": {"$or": match_list} }, 
+        # Show only id and educational level fields
+        {"$project": project_object },
+        # Sum the total number of people that fall into each 
+        # of the educational level fields across all the selected
+        # regions
+        {"$group": group_object },
+        # Remove id field
+        {"$project": {"_id": 0} }
+    ])
 
     quantity_data = []    
     for document in cursor:
@@ -126,10 +111,10 @@ def serve_education_charts_by_category(region_list):
                         'ytitle': 'Persentase Orang', 
                         'data': percentage_data}
 
-    jsonprint({'chart_list': [quantity_chart, percentage_chart]})
+    chart_list = {'chart_list': [quantity_chart, percentage_chart]}
+    jsonprint(chart_list)
 
-    return Response(response=json.dumps({'chart_list': [quantity_chart,
-                                                        percentage_chart]}), 
+    return Response(response=json.dumps(chart_list), 
                    status=200, 
                    mimetype='application/json')
 
@@ -160,18 +145,14 @@ def serve_education_charts_by_region(region_list):
             project_object[region] = 1
 
         cursor = \
-        collection.aggregate([{
-            "$match": {"$or": match_list}
-        }, 
-        {
-            "$project": {"_id" : 1, "Kecamatan" : 1, edu_level : 1}
-        },
-        {
-            "$group": group_object
-        },
-        {
-            "$project": project_object
-        }])        
+        collection.aggregate([
+            {"$match": {"$or": match_list} }, 
+            {
+                "$project": {"_id" : 1, "Kecamatan" : 1, edu_level : 1}
+            },
+            {"$group": group_object },
+            {"$project": project_object }
+        ])        
 
         field_data = None
         for result in cursor:
@@ -193,8 +174,57 @@ def serve_education_charts_by_region(region_list):
                     status=200, 
                     mimetype='application/json')       
 
-def serve_occupation_charts_by_category(region_list):
-    return 5
+def serve_occupation_charts_by_field(region_list):
+    global DATABASE
+    collection = DATABASE.get_collection('occupation')
+
+    # $match
+    match_list = [{"Kecamatan": region} for region in region_list]
+
+    # $project
+    occupation_list = get_field_list(collection)
+    project_object = {'_id': 1}
+    for occupation in occupation_list:
+        project_object[occupation] = 1
+
+    # $group
+    group_object = {'_id': 'null'}
+    for occupation in occupation_list:
+        group_object[occupation] = {'$sum' : ('$' + occupation)}
+
+    cursor = \
+    collection.aggregate([
+        {'$match': {'$or': match_list} },
+        {'$project': project_object},
+        {'$group': group_object},
+        {'$project': {'_id': 0} }
+    ])
+
+    data = None
+    for document in cursor:
+        data = document
+
+    chart_data = [[occupation, data[occupation]] 
+                  for occupation in list(data.keys())
+                  if occupation != "Lainnya" and data[occupation] != 0]
+
+    top10_data = sorted(chart_data, key=lambda x:x[1], reverse=True)[:10]
+    bottom10_data = sorted(chart_data, key=lambda x:x[1])[:10]
+
+    top10_chart = {'label': 'a', 'chart_type': 'bar',
+                   'xtitle': 'Jumlah Orang', 'ytitle': 'Pekerjaan',
+                   'data': top10_data}
+
+    bottom10_chart = {'label': 'a', 'chart_type': 'bar',
+                      'xtitle': 'Jumlah Orang', 'ytitle': 'Pekerjaan',
+                      'data': bottom10_data}
+
+    chart_list = {'chart_list': [top10_chart, bottom10_chart]}
+
+    jsonprint(chart_list)
+    return Response(response=json.dumps(chart_list),
+                    status=200,
+                    mimetype='application/json')    
 
 def jsonprint(obj):
     """Prints Mongo document i.e Python object 
@@ -207,6 +237,6 @@ def jsonprint(obj):
         print(json.dumps(obj_copy, sort_keys=True, indent=4))
 
 if __name__ == '__main__':
-    # main()
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)    
+    main()
+    # port = int(os.environ.get('PORT', 5000))
+    # app.run(host='0.0.0.0', port=port)    
