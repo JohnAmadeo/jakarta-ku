@@ -7,7 +7,7 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    # create_chart_list('region', ['koja', 'tebet'], 'occupation')
+    create_chart_list('field', ['koja', 'tebet'], 'marriage')
     return 0
 
 def create_chart_list(comparison, region_list, category):
@@ -74,8 +74,7 @@ def create_education_by_field(region_list, collection):
                 [
                     field,
                     document[field],
-                    {"edu_level": 
-                        get_field_display_order('education', field)} 
+                    {"edu_level": get_field_display_order(field)} 
                 ]
             )
 
@@ -158,8 +157,7 @@ def create_education_by_region(region_list, collection):
             "xtitle": 'Kecamatan', "ytitle": 'Jumlah Orang',
             "data": [[region, field_data[region]] 
                      for region in list(field_data.keys())],
-            "edu_level": 
-                get_field_display_order('education', edu_level) 
+            "edu_level": get_field_display_order(edu_level) 
         })
 
         percentage_data = []
@@ -175,8 +173,7 @@ def create_education_by_region(region_list, collection):
             "chart_type": 'bar', "label": edu_level,
             "xtitle": 'Kecamatan', "ytitle": 'Jumlah Orang',
             "data": percentage_data,
-            "edu_level": 
-                get_field_display_order('education', edu_level) 
+            "edu_level": get_field_display_order(edu_level) 
         })
 
     quantity_list = sorted(quantity_list, 
@@ -247,11 +244,8 @@ def create_occupation_by_field(region_list, collection):
     return chart_list   
 
 def create_occupation_by_region(region_list, collection):
-    # Get total people for each selected region
-    population_dict = get_dataset_population(region_list, collection) 
-
     # Comment later
-    chart_list = []
+    quantity_list = []
 
     # Handle $match stage
     # ----------------------
@@ -291,29 +285,87 @@ def create_occupation_by_region(region_list, collection):
         # jsonprint(field_data)
 
         if not all_x(list(field_data.values()), 0):
-            chart_list.append({
-                "chart_type": 'bar',
-                "xtitle": 'Kecamatan',
-                "ytitle": 'Jumlah Orang',
-                "label": occupation,
+            quantity_list.append({
+                "chart_type": 'bar', "label": occupation,
+                "xtitle": 'Kecamatan', "ytitle": 'Jumlah Orang',
                 "data": [[key, field_data[key]] 
                          for key in list(field_data.keys())],
-                "occupation_stage": 
-                    get_field_display_order('occupation', occupation) 
+                "occupation_stage": get_field_display_order(occupation) 
             })
 
-    chart_list = sorted(chart_list, 
-                        key=lambda chart: chart['occupation_stage'])
-    for chart in chart_list:
-        chart.pop('occupation_stage')
 
-    chart_list = {'chart_list': chart_list, 
-                  'warning': 'Pekerjaan yang dipegang oleh 0 orang ' + 
-                             'di semua kecamatan yang terseleksi ' +
-                             'tidak akan ditampilkan'}
+    # quantity_list = sorted(quantity_list, key=lambda chart: chart['occupation_stage'])
+    quantity_list = sorted(quantity_list, 
+                           key=lambda chart: chart['occupation_stage'])
+
+    # jsonprint(quantity_list)
+
+    for index, data in enumerate(quantity_list):
+        quantity_list[index].pop('occupation_stage')
+
+    chart_list = {
+        'chart_list':  quantity_list,
+        'warning': 'Pekerjaan yang dipegang oleh 0 orang di semua ' + 
+                   'kecamatan yang terseleksi tidak akan ditampilkan'
+    }
 
     jsonprint(chart_list)
     return chart_list      
+
+def create_marriage_by_field(region_list, collection):
+    # Handle $match stage
+    match_list = [{"Kecamatan": region} for region in region_list]
+
+    # Handle $project stage
+    # get list of all relationship status fields
+    status_list = get_field_list(collection)
+    project_object = {'_id': 1}
+    for status in status_list:
+        project_object[status] = 1
+
+    # Handle $group stage
+    # sum up total number of people in each relationship status field 
+    group_object = {"_id": "null"}
+    for status in status_list:
+        group_object[status] = {"$sum" : ("$" + status) }
+
+    cursor = \
+    collection.aggregate([
+        {"$match": {"$or": match_list} }, 
+        {"$project": project_object },
+        {"$group": group_object },
+        {"$project": {"_id": 0} }
+    ])
+
+    data = None
+    for document in cursor:
+        data = [[key, document[key], get_field_display_order(key)] 
+                for key in list(document.keys())]
+        data = sorted(data, key=lambda x: x[2])
+
+    quantity_chart = {
+        'label': 'quantity', 'chart_type': 'bar',
+        'xtitle': 'Jumlah Orang', 'ytitle': 'Status Pernikahan',
+        'data': [[data_unit[0], data_unit[1]] for data_unit in data]
+    }
+
+    total_people = sum([data_unit[1] for data_unit in data])
+
+    # # calculate the number of people in each educational level
+    # # field as a percentage of the total number of people
+    data = [[data_unit[0], round_num(data_unit[1], total_people)] 
+            for data_unit in quantity_chart['data']]
+
+    percentage_chart = {
+        'label': 'percentage', 'chart_type': 'pie',
+        'xtitle': 'Tingkat Pendidikan', 'ytitle': 'Persentase Orang',
+        'data': data
+    } 
+
+    chart_list = {'chart_list': [quantity_chart, percentage_chart]}
+    jsonprint(chart_list)
+
+    return chart_list    
 
 def get_dataset_population(region_list, collection):
     # Get total people for each selected region
@@ -334,8 +386,15 @@ def get_dataset_population(region_list, collection):
         region = document.pop('_id')
         population_dict[region] = sum(list(document.values()))  
 
-    jsonprint(population_dict)
+    # jsonprint(population_dict)
     return population_dict
+
+def round_num(num, total):
+    percentage = num / total
+    decimals = 2
+    while round(percentage, decimals) == 0:
+        decimals += 1
+    return round(percentage, decimals)
 
 def all_x(elem_list, check_elem):
     for elem in elem_list:
