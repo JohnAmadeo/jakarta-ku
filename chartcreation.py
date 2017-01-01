@@ -1,26 +1,31 @@
 from __future__ import print_function
 from flask import Flask, render_template, request, redirect, make_response, Response
 from pymongo import MongoClient
-from fieldutils import get_field_stage, get_field_list
+from fieldutils import get_field_display_order, get_field_list
 import os, json
 
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
+    create_chart_list('region', ['koja', 'tebet'], 'occupation')
     return 0
 
 def create_chart_list(comparison, region_list, category):
-    if category == 'education' and comparison == "field": 
-            return serve_education_charts_by_field(region_list)
-    elif category == 'education' and comparison == "region":
-            return serve_education_charts_by_region(region_list)
-    elif category == 'occupation' and comparison == "field":
-            return serve_occupation_charts_by_field(region_list)
-
-def create_education_charts_by_field(region_list):
     global DATABASE
-    collection = DATABASE.get_collection('education')
+    if category == 'education':
+        collection = DATABASE.get_collection('education')
+        if comparison == 'field': 
+            return create_education_by_field(region_list, collection)
+        elif comparison == 'region':
+            return create_education_by_region(region_list, collection)
+    elif category == 'occupation':
+        collection = DATABASE.get_collection('occupation')
+        if comparison == 'field':
+            return create_occupation_by_field(region_list, collection)
+        elif comparison == 'region':
+            return create_occupation_by_region(region_list, collection)
 
+def create_education_by_field(region_list, collection):
     # Handle $match stage
     # ----------------------
     match_list = [{"Kecamatan": region} for region in region_list]
@@ -63,7 +68,8 @@ def create_education_charts_by_field(region_list):
                 [
                     field,
                     document[field],
-                    {"edu_level": get_field_stage('education', field)} 
+                    {"edu_level": 
+                        get_field_display_order('education', field)} 
                 ]
             )
 
@@ -102,9 +108,7 @@ def create_education_charts_by_field(region_list):
 
     return chart_list
 
-def create_education_charts_by_region(region_list):
-    global DATABASE
-    collection = DATABASE.get_collection('education')
+def create_education_by_region(region_list, collection):
     chart_list = []
 
     # Handle $match stage
@@ -145,7 +149,8 @@ def create_education_charts_by_region(region_list):
         chart_list.append({
             "field": edu_level,
             "data": field_data,
-            "edu_level": get_field_stage('education', edu_level) 
+            "edu_level": 
+                get_field_display_order('education', edu_level) 
         })
 
     chart_list = sorted(chart_list, 
@@ -155,13 +160,11 @@ def create_education_charts_by_region(region_list):
         # jsonprint(chart)
 
     chart_list = {'chart_list': chart_list}
+    jsonprint(chart_list)
 
     return chart_list      
 
-def create_occupation_charts_by_field(region_list):
-    global DATABASE
-    collection = DATABASE.get_collection('occupation')
-
+def create_occupation_by_field(region_list, collection):
     # $match
     match_list = [{"Kecamatan": region} for region in region_list]
 
@@ -207,6 +210,73 @@ def create_occupation_charts_by_field(region_list):
 
     jsonprint(chart_list)
     return chart_list   
+
+def create_occupation_by_region(region_list, collection):
+    chart_list = []
+
+    # Handle $match stage
+    # ----------------------
+    match_list = [{"Kecamatan": region} for region in region_list]
+
+    occupation_list = get_field_list(collection)
+    for occupation in occupation_list:
+        group_object = {"_id": "null"}
+        project_object = {"_id": 0}
+
+        for region in region_list:
+            group_object[region] = \
+            {
+                "$sum": {
+                    "$cond" : {
+                        "if": {"$eq": ["$Kecamatan", region]},
+                        "then": "$" + occupation, "else": 0
+                    }
+                }
+            }
+            project_object[region] = 1
+
+        cursor = \
+        collection.aggregate([
+            {"$match": {"$or": match_list} }, 
+            {
+                "$project": {"_id" : 1, "Kecamatan" : 1, occupation : 1}
+            },
+            {"$group": group_object },
+            {"$project": project_object }
+        ])    
+
+        field_data = None
+        for result in cursor:
+            field_data = result
+
+        jsonprint(field_data)
+
+        if not all_x(list(field_data.values()), 0):
+            chart_list.append({
+                "field": occupation,
+                "data": field_data,
+                "occupation_stage": 
+                    get_field_display_order('occupation', occupation) 
+            })
+
+    chart_list = sorted(chart_list, 
+                        key=lambda chart: chart['occupation_stage'])
+    for chart in chart_list:
+        chart.pop('occupation_stage')
+
+    chart_list = {'chart_list': chart_list, 
+                  'warning': 'Pekerjaan yang dipegang oleh 0 orang ' + 
+                             'di semua kecamatan yang terseleksi ' +
+                             'tidak akan ditampilkan'}
+
+    jsonprint(chart_list)
+    return chart_list      
+
+def all_x(elem_list, check_elem):
+    for elem in elem_list:
+        if elem != check_elem:
+            return False
+    return True
 
 def jsonprint(obj):
     """Prints Mongo document i.e Python object 
