@@ -7,7 +7,7 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    create_chart_list('field', ['koja', 'tebet'], 'marriage')
+    create_chart_list('region', ['koja', 'tebet'], 'marriage')
     return 0
 
 def create_chart_list(comparison, region_list, category):
@@ -366,6 +366,80 @@ def create_marriage_by_field(region_list, collection):
     jsonprint(chart_list)
 
     return chart_list    
+
+def create_marriage_by_region(region_list, collection):
+    # Comment later
+    quantity_list = []
+    percentage_list = []
+    total_people = get_dataset_population(region_list, collection)
+
+    # Handle $match stage
+    # ----------------------
+    match_list = [{"Kecamatan": region} for region in region_list]
+
+    status_list = get_field_list(collection)
+    for status in status_list:
+        group_object = {'_id': 'null'}
+        project_object = {'_id': 0}
+
+        for region in region_list:
+            group_object[region] = \
+            {
+                '$sum': {
+                    '$cond' : {
+                        'if': {'$eq': ['$Kecamatan', region]},
+                        'then': '$' + status, 'else': 0
+                    }
+                }
+            }
+            project_object[region] = 1
+
+        cursor = \
+        collection.aggregate([
+            {'$match': {'$or': match_list} }, 
+            {'$project': {'_id' : 1, 'Kecamatan' : 1, status : 1} },
+            {'$group': group_object },
+            {'$project': project_object }
+        ])    
+
+        field_data = None
+        for result in cursor:
+            field_data = result
+
+        quantity_list.append({
+            "chart_type": 'bar', "label": status,
+            "xtitle": 'Kecamatan', "ytitle": 'Jumlah Orang',
+            "data": [[key, field_data[key]] 
+                     for key in list(field_data.keys())],
+            "status_stage": get_field_display_order(status) 
+        })
+
+        percentage_list.append({
+            "chart_type": 'bar', "label": status,
+            "xtitle": 'Kecamatan', "ytitle": 'Jumlah Orang',
+            "data": [[key, round_num(field_data[key], total_people[key])] 
+                     for key in list(field_data.keys())],
+            "status_stage": get_field_display_order(status) 
+        })
+
+    quantity_list = sorted(quantity_list, 
+                           key=lambda chart: chart['status_stage'])
+    percentage_list = sorted(percentage_list, 
+                           key=lambda chart: chart['status_stage'])
+
+    for index, data in enumerate(quantity_list):
+        quantity_list[index].pop('status_stage')
+        percentage_list[index].pop('status_stage')
+
+    chart_list = {
+        'chart_list': {
+            'quantity_list': quantity_list,
+            'percentage_list': percentage_list
+        }
+    }
+
+    jsonprint(chart_list)
+    return chart_list  
 
 def get_dataset_population(region_list, collection):
     # Get total people for each selected region
