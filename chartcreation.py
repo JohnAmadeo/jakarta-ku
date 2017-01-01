@@ -7,7 +7,7 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    create_chart_list('region', ['koja', 'tebet'], 'education')
+    # create_chart_list('region', ['koja', 'tebet'], 'occupation')
     return 0
 
 def create_chart_list(comparison, region_list, category):
@@ -116,26 +116,10 @@ def create_education_by_field(region_list, collection):
 
 def create_education_by_region(region_list, collection):
     # Get total people for each selected region
-    population_dict = dict()
-    match_list = [{"Kecamatan": region} for region in region_list]
-    occupation_list = get_field_list(collection)
-    group_object = {'_id': '$Kecamatan'}
-    for occupation in occupation_list:
-        group_object[occupation] = {"$sum": '$' + occupation}
+    population_dict = get_dataset_population(region_list, collection)    
 
-    cursor = \
-    collection.aggregate([
-        {'$match': {'$or': match_list} },
-        {'$group': group_object}
-    ])
-
-    for document in cursor:
-        region = document.pop('_id')
-        population_dict[region] = sum(list(document.values()))
-
-    # jsonprint(population_dict)
-
-    # Get chart_list w/ absolute numbers
+    # Get regional comparison quantity and percentage-wise
+    # Comment more later
     quantity_list = []
     percentage_list = []
     match_list = [{"Kecamatan": region} for region in region_list]
@@ -263,6 +247,10 @@ def create_occupation_by_field(region_list, collection):
     return chart_list   
 
 def create_occupation_by_region(region_list, collection):
+    # Get total people for each selected region
+    population_dict = get_dataset_population(region_list, collection) 
+
+    # Comment later
     chart_list = []
 
     # Handle $match stage
@@ -326,6 +314,28 @@ def create_occupation_by_region(region_list, collection):
 
     jsonprint(chart_list)
     return chart_list      
+
+def get_dataset_population(region_list, collection):
+    # Get total people for each selected region
+    population_dict = dict()
+    match_list = [{"Kecamatan": region} for region in region_list]
+    field_list = get_field_list(collection)
+    group_object = {'_id': '$Kecamatan'}
+    for field in field_list:
+        group_object[field] = {"$sum": '$' + field}
+
+    cursor = \
+    collection.aggregate([
+        {'$match': {'$or': match_list} },
+        {'$group': group_object}
+    ])
+
+    for document in cursor:
+        region = document.pop('_id')
+        population_dict[region] = sum(list(document.values()))  
+
+    jsonprint(population_dict)
+    return population_dict
 
 def all_x(elem_list, check_elem):
     for elem in elem_list:
