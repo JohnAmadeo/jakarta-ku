@@ -7,7 +7,7 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    create_chart_list('region', ['koja', 'tebet'], 'occupation')
+    create_chart_list('region', ['koja', 'tebet'], 'education')
     return 0
 
 def create_chart_list(comparison, region_list, category):
@@ -24,6 +24,12 @@ def create_chart_list(comparison, region_list, category):
             return create_occupation_by_field(region_list, collection)
         elif comparison == 'region':
             return create_occupation_by_region(region_list, collection)
+    elif category == 'marriage':
+        collection = DATABASE.get_collection('marriage')
+        if comparison == 'field':
+            return create_marriage_by_field(region_list, collection)
+        elif comparison == 'region':
+            return create_marriage_by_region(region_list, collection)
 
 def create_education_by_field(region_list, collection):
     # Handle $match stage
@@ -62,7 +68,7 @@ def create_education_by_field(region_list, collection):
 
     quantity_data = []    
     for document in cursor:
-        jsonprint(document)
+        # jsonprint(document)
         for field in document:
             quantity_data.append(
                 [
@@ -109,10 +115,29 @@ def create_education_by_field(region_list, collection):
     return chart_list
 
 def create_education_by_region(region_list, collection):
-    chart_list = []
+    # Get total people for each selected region
+    population_dict = dict()
+    match_list = [{"Kecamatan": region} for region in region_list]
+    occupation_list = get_field_list(collection)
+    group_object = {'_id': '$Kecamatan'}
+    for occupation in occupation_list:
+        group_object[occupation] = {"$sum": '$' + occupation}
 
-    # Handle $match stage
-    # ----------------------
+    cursor = \
+    collection.aggregate([
+        {'$match': {'$or': match_list} },
+        {'$group': group_object}
+    ])
+
+    for document in cursor:
+        region = document.pop('_id')
+        population_dict[region] = sum(list(document.values()))
+
+    # jsonprint(population_dict)
+
+    # Get chart_list w/ absolute numbers
+    quantity_list = []
+    percentage_list = []
     match_list = [{"Kecamatan": region} for region in region_list]
 
     edu_level_list = get_field_list(collection)
@@ -134,34 +159,60 @@ def create_education_by_region(region_list, collection):
 
         cursor = \
         collection.aggregate([
-            {"$match": {"$or": match_list} }, 
-            {
-                "$project": {"_id" : 1, "Kecamatan" : 1, edu_level : 1}
-            },
-            {"$group": group_object },
-            {"$project": project_object }
+            {'$match': {"$or": match_list} }, 
+            {'$project': {"_id" : 1, "Kecamatan" : 1, edu_level : 1} },
+            {'$group': group_object },
+            {'$project': project_object }
         ])        
 
         field_data = None
         for result in cursor:
             field_data = result
 
-        chart_list.append({
-            "field": edu_level,
-            "data": field_data,
+        quantity_list.append({
+            "chart_type": 'bar', "label": edu_level,
+            "xtitle": 'Kecamatan', "ytitle": 'Jumlah Orang',
+            "data": [[region, field_data[region]] 
+                     for region in list(field_data.keys())],
             "edu_level": 
                 get_field_display_order('education', edu_level) 
         })
 
-    chart_list = sorted(chart_list, 
-                        key=lambda chart: chart['edu_level'])
-    for chart in chart_list:
-        chart.pop('edu_level')
-        # jsonprint(chart)
+        percentage_data = []
+        for region in list(field_data.keys()):
+            num_decimals = 2
+            percentage = field_data[region] / population_dict[region]
+            while round(percentage, num_decimals) == 0:
+                num_decimals += 1
+            percentage_data.append([region, 
+                                    round(percentage, num_decimals)])
 
-    chart_list = {'chart_list': chart_list}
+        percentage_list.append({
+            "chart_type": 'bar', "label": edu_level,
+            "xtitle": 'Kecamatan', "ytitle": 'Jumlah Orang',
+            "data": percentage_data,
+            "edu_level": 
+                get_field_display_order('education', edu_level) 
+        })
+
+    quantity_list = sorted(quantity_list, 
+                           key=lambda chart: chart['edu_level'])
+    percentage_list = sorted(percentage_list, 
+                             key=lambda chart: chart['edu_level'])
+
+    for index, data in enumerate(quantity_list):
+        quantity_list[index].pop('edu_level')
+        percentage_list[index].pop('edu_level')  
+
+    chart_list = \
+    {
+        'chart_list': {
+            'quantity_list': quantity_list,
+            'percentage_list': percentage_list
+        }
+    }      
+
     jsonprint(chart_list)
-
     return chart_list      
 
 def create_occupation_by_field(region_list, collection):
@@ -249,12 +300,16 @@ def create_occupation_by_region(region_list, collection):
         for result in cursor:
             field_data = result
 
-        jsonprint(field_data)
+        # jsonprint(field_data)
 
         if not all_x(list(field_data.values()), 0):
             chart_list.append({
-                "field": occupation,
-                "data": field_data,
+                "chart_type": 'bar',
+                "xtitle": 'Kecamatan',
+                "ytitle": 'Jumlah Orang',
+                "label": occupation,
+                "data": [[key, field_data[key]] 
+                         for key in list(field_data.keys())],
                 "occupation_stage": 
                     get_field_display_order('occupation', occupation) 
             })
