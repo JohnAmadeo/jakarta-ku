@@ -1,11 +1,11 @@
-def get_field_display_order(category, field):
-    education_list = \
+def get_field_display_order(field):
+    education_dict = \
     {
         "Tidak/Belum Sekolah": 1, "Tidak/Belum Tamat SD": 2, "SD": 3, 
         "SMP": 4, "SMA": 5, "D1/D2": 6, "D3": 7, "S1/D4": 8, "S2": 9, 
         "S3": 10
     }
-    occupation_list = \
+    occupation_dict = \
     {
         "Akuntan": 0,
         "Anggota BPK": 1,
@@ -93,11 +93,20 @@ def get_field_display_order(category, field):
         "Wartawan": 83,
         "Wiraswasta": 84  
     }
+    marriage_dict = \
+    {
+        'Belum Kawin': 0,
+        'Kawin': 1,
+        'Cerai Hidup': 2,
+        'Cerai Mati': 3
+    }
 
-    if category == "education":
-        return education_list[field]
-    elif category == "occupation":
-        return occupation_list[field]
+    if field in list(education_dict.keys()):
+        return education_dict[field]
+    elif field in list(occupation_dict.keys()):
+        return occupation_dict[field]
+    elif field in list(marriage_dict.keys()):
+        return marriage_dict[field]
 
 def get_field_list(collection):
     """
