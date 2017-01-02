@@ -100,6 +100,16 @@ def get_field_display_order(field):
         'Cerai Hidup': 2,
         'Cerai Mati': 3
     }
+    religion_dict = \
+    {
+        'Islam': 0,
+        'Kristen': 1,
+        'Katholik': 2,
+        'Hindu': 3,
+        'Budha': 4,
+        'Khonghuchu': 5,
+        'Aliran Kepercayaan': 6
+    }
 
     if field in list(education_dict.keys()):
         return education_dict[field]
@@ -107,6 +117,8 @@ def get_field_display_order(field):
         return occupation_dict[field]
     elif field in list(marriage_dict.keys()):
         return marriage_dict[field]
+    elif field in list(religion_dict.keys()):
+        return religion_dict[field]
 
 def get_field_list(collection):
     """
