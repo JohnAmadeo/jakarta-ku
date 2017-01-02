@@ -7,8 +7,7 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    create_chart_list('region', ['koja', 'tebet'], 'marriage')
-    return 0
+    create_chart_list('field', ['koja', 'tebet'], 'religion')
 
 def create_chart_list(comparison, region_list, category):
     global DATABASE
@@ -30,6 +29,66 @@ def create_chart_list(comparison, region_list, category):
             return create_marriage_by_field(region_list, collection)
         elif comparison == 'region':
             return create_marriage_by_region(region_list, collection)
+    elif category == 'religion':
+        if comparison == 'field':
+            qty_chart = create_chart_by_field_qty(region_list, category)
+            chart_population = get_chart_population(qty_chart, 'field')
+            pct_chart = create_chart_by_field_pct(qty_chart, chart_population)
+            # add_axes([qty_chart, pct_chart])
+            chart_list = {'chart_list': [qty_chart, pct_chart]}
+            jsonprint(chart_list)
+            return chart_list
+
+def create_chart_by_field_qty(region_list, category):
+    global DATABASE
+    collection = DATABASE.get_collection(category)
+
+    # filter out all documents whose region field is not
+    # in the selected region list
+    match_list = [{'Kecamatan': region} for region in region_list]
+
+    # get list of all category fields
+    field_list = get_field_list(collection)
+
+    project_object = {'_id': 1}
+    for field in field_list:
+        project_object[field] = 1
+
+    group_object = {'_id': 'null'}
+    for field in field_list:
+        group_object[field] = {'$sum': ('$' + field)}
+
+    cursor = \
+    collection.aggregate([
+        {'$match': {'$or': match_list} }, 
+        {'$project': project_object },
+        {'$group': group_object },
+        {'$project': {'_id': 0} }        
+    ])
+
+    data = None
+    for document in cursor:
+        data = [[key, document[key], get_field_display_order(key)]
+                for key in list(document.keys())]
+        jsonprint(data)
+        data = sorted(data, key=lambda x: x[2])
+    
+    chart = {
+        'label': 'quantity'
+        'data': [[data_unit[0], data_unit[1]] for data_unit in data]
+    }           
+
+    return chart
+
+def get_chart_population(chart, comparison):
+    if comparison == 'field':
+        return sum([data_unit[1] for data_unit in chart['data']])
+
+def create_chart_by_field_pct(chart, total_people):
+    data = [[data_unit[0], round_num(data_unit[1], total_people)] 
+            for data_unit in chart['data']]
+    chart = {'label': 'percentage', 'data': data}
+    return chart
 
 def create_education_by_field(region_list, collection):
     # Handle $match stage
@@ -240,7 +299,7 @@ def create_occupation_by_field(region_list, collection):
 
     chart_list = {'chart_list': [top10_chart, bottom10_chart]}
 
-    jsonprint(chart_list)
+    # jsonprint(chart_list)
     return chart_list   
 
 def create_occupation_by_region(region_list, collection):
