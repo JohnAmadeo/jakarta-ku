@@ -110,6 +110,29 @@ def get_field_display_order(field):
         'Khonghuchu': 5,
         'Aliran Kepercayaan': 6
     }
+    demographics_dict = \
+    {
+        'Luas Wilayah'   : 0,
+        'Kepadatan'      : 1,
+        '35-39 Laki-Laki': 2,
+        '35-39 Perempuan': 3,
+        '40-44 Laki-Laki': 4,
+        '40-44 Perempuan': 5,
+        '45-49 Laki-Laki': 6,
+        '45-49 Perempuan': 7,
+        '50-54 Laki-Laki': 8,
+        '50-54 Perempuan': 9,
+        '55-59 Laki-Laki': 10,
+        '55-59 Perempuan': 11,
+        '60-64 Laki-Laki': 12,
+        '60-64 Perempuan': 13,
+        '65-69 Laki-Laki': 14,
+        '65-69 Perempuan': 15,
+        '70-74 Laki-Laki': 16,
+        '70-74 Perempuan': 17,
+        '>75 Laki-Laki'  : 18,
+        '>75  Perempuan' : 19
+    }
 
     if field in list(education_dict.keys()):
         return education_dict[field]
@@ -119,6 +142,8 @@ def get_field_display_order(field):
         return marriage_dict[field]
     elif field in list(religion_dict.keys()):
         return religion_dict[field]
+    elif field in list(demographics_dict.keys()):
+        return demographics_dict[field]
 
 def get_field_list(collection):
     """
