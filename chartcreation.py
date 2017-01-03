@@ -7,7 +7,10 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    create_chart_list('field', ['koja', 'tebet'], 'religion')
+    chart_list = create_chart_by_region_qty(['koja', 'tebet'], 'religion')
+    chart_total = get_chart_total(chart_list, 'region')
+    create_chart_by_region_pct(chart_list, chart_total)
+    jsonprint(chart_total)
 
 def create_chart_list(comparison, region_list, category):
     global DATABASE
@@ -30,14 +33,7 @@ def create_chart_list(comparison, region_list, category):
         elif comparison == 'region':
             return create_marriage_by_region(region_list, collection)
     elif category == 'religion':
-        if comparison == 'field':
-            qty_chart = create_chart_by_field_qty(region_list, category)
-            chart_population = get_chart_population(qty_chart, 'field')
-            pct_chart = create_chart_by_field_pct(qty_chart, chart_population)
-            # add_axes([qty_chart, pct_chart])
-            chart_list = {'chart_list': [qty_chart, pct_chart]}
-            jsonprint(chart_list)
-            return chart_list
+        create_religion_chart(region_list, comparison)
 
 def create_chart_by_field_qty(region_list, category):
     global DATABASE
@@ -74,21 +70,130 @@ def create_chart_by_field_qty(region_list, category):
         data = sorted(data, key=lambda x: x[2])
     
     chart = {
-        'label': 'quantity'
+        'label': 'quantity',
         'data': [[data_unit[0], data_unit[1]] for data_unit in data]
     }           
 
     return chart
 
-def get_chart_population(chart, comparison):
+def get_chart_total(chart_obj, comparison):
+    """
+    If 'region' comparison, list of charts is passed in
+    If 'field' comparison, chart is passed in
+    """
     if comparison == 'field':
+        chart = chart_obj
         return sum([data_unit[1] for data_unit in chart['data']])
+    elif comparison == 'region':
+        population_dict = {}
+        for chart in chart_obj:
+            for data_unit in chart['data']:
+                if data_unit[0] in population_dict.keys():
+                    population_dict[data_unit[0]] += data_unit[1]
+                else:
+                    population_dict[data_unit[0]] = data_unit[1]
 
-def create_chart_by_field_pct(chart, total_people):
-    data = [[data_unit[0], round_num(data_unit[1], total_people)] 
+        return population_dict
+
+        # population_dict = dict()
+        # match_list = [{"Kecamatan": region} for region in region_list]
+        # field_list = get_field_list(collection)
+        # group_object = {'_id': '$Kecamatan'}
+        # for field in field_list:
+        #     group_object[field] = {"$sum": '$' + field}
+
+        # cursor = \
+        # collection.aggregate([
+        #     {'$match': {'$or': match_list} },
+        #     {'$group': group_object}
+        # ])
+
+        # for document in cursor:
+        #     region = document.pop('_id')
+        #     population_dict[region] = sum(list(document.values()))  
+
+        # return population_dict
+
+def create_chart_by_field_pct(chart, chart_total):
+    data = [[data_unit[0], round_num(data_unit[1], chart_total)] 
             for data_unit in chart['data']]
     chart = {'label': 'percentage', 'data': data}
     return chart
+
+def create_religion_chart(region_list, comparison):
+    if comparison == 'field':
+        qty_chart = create_chart_by_field_qty(region_list, category)
+        chart_population = get_chart_population(qty_chart, 'field')
+        pct_chart = create_chart_by_field_pct(qty_chart, chart_population)
+        # add_axes([qty_chart, pct_chart])
+        chart_list = {'chart_list': [qty_chart, pct_chart]}
+        jsonprint(chart_list)
+        return chart_list
+    elif comparison == 'region':
+        return 0
+
+def create_chart_by_region_qty(region_list, category):
+    global DATABASE
+    collection = DATABASE.get_collection(category)
+    qty_list = []
+
+    match_list = [{'Kecamatan': region} for region in region_list]
+
+    field_list = get_field_list(collection)
+    for field in field_list:
+        group_object = {'_id': 'null'}
+        project_object = {'_id': 0}
+
+        for region in region_list:
+            group_object[region] = \
+            {
+                '$sum': {
+                    '$cond' : {
+                        'if': {'$eq': ['$Kecamatan', region]},
+                        'then': '$' + field, 'else': 0
+                    }
+                }
+            }
+            project_object[region] = 1
+
+        cursor = \
+        collection.aggregate([
+            {'$match': {'$or': match_list} }, 
+            {'$project': {'_id' : 1, 'Kecamatan' : 1, field : 1} },
+            {'$group': group_object },
+            {'$project': project_object }
+        ])  
+
+        data = None
+        for result in cursor:
+            data = result
+
+        qty_list.append({
+            'label': field,
+            'data': [[key, data[key]] for key in list(data.keys())],
+            'display_order': get_field_display_order(field) 
+        })
+
+    qty_list = sorted(qty_list, 
+                           key=lambda chart: chart['display_order'])
+    for chart in qty_list:
+        chart.pop('display_order')
+
+    return qty_list
+
+def create_chart_by_region_pct(chart_list, chart_total):
+    pct_list = []
+    for chart in chart_list:
+        pct_list.append({
+            'label': chart['label'],
+            'data': [[data_unit[0], 
+                      round_num(data_unit[1], chart_total[data_unit[0]])]
+                     for data_unit in chart['data']]    
+        })
+
+    jsonprint(pct_list)
+
+
 
 def create_education_by_field(region_list, collection):
     # Handle $match stage
@@ -483,6 +588,9 @@ def create_marriage_by_region(region_list, collection):
 
     quantity_list = sorted(quantity_list, 
                            key=lambda chart: chart['status_stage'])
+
+    jsonprint(quantity_list)
+
     percentage_list = sorted(percentage_list, 
                            key=lambda chart: chart['status_stage'])
 
@@ -519,7 +627,6 @@ def get_dataset_population(region_list, collection):
         region = document.pop('_id')
         population_dict[region] = sum(list(document.values()))  
 
-    # jsonprint(population_dict)
     return population_dict
 
 def round_num(num, total):
