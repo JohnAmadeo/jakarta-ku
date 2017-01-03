@@ -7,7 +7,7 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    chart_list = create_occupation_chart(['koja', 'tebet'], 'region')
+    chart_list = create_demographics_chart(['koja', 'tebet'], 'region')
 
 def create_chart_list(comparison, region_list, category):
     global DATABASE
@@ -19,6 +19,8 @@ def create_chart_list(comparison, region_list, category):
         create_marriage_chart(region_list, comparison)
     elif category == 'religion':
         create_religion_chart(region_list, comparison)
+    elif category == 'demographics':
+        create_demographics_chart(region_list, comparison)
 
 def create_religion_chart(region_list, comparison):
     if comparison == 'field':
@@ -152,6 +154,48 @@ def create_occupation_chart(region_list, comparison):
         jsonprint(chart_list)
         return chart_list  
 
+def create_demographics_chart(region_list, comparison):
+    if comparison == 'field':
+        qty_chart = create_chart_by_field_qty(region_list, 'demographics')
+        qty_chart['data'] = qty_chart['data'][2:]
+        chart_total = get_chart_total(qty_chart, 'field')
+        pct_chart = create_chart_by_field_pct(qty_chart, chart_total)
+
+        qty_chart['xtitle'] = 'Demografi'
+        qty_chart['ytitle'] = 'Jumlah Orang'
+        pct_chart['xtitle'] = 'Agama'
+        pct_chart['ytitle'] = 'Persentase Orang'
+        chart_list = {'chart_list': [qty_chart, pct_chart]}
+
+        jsonprint(chart_list)
+        return chart_list
+    elif comparison == 'region':
+        qty_list = create_chart_by_region_qty(region_list, 'demographics')
+        
+        area_chart = qty_list[0]
+        density_chart = qty_list[1]
+        area_chart['xtitle'] = 'Kecamatan'
+        area_chart['ytitle'] = 'Km^2'
+        density_chart['xtitle'] = 'Kecamatan'
+        density_chart['ytitle'] = 'Orang/Km^2'
+
+
+        qty_list = qty_list[2:]
+        chart_total = get_chart_total(qty_list, 'region')
+        pct_list = create_chart_by_region_pct(qty_list, chart_total)
+
+        for index, chart in enumerate(qty_list):
+            qty_list[index]['xtitle'] = 'Kecamatan'
+            qty_list[index]['ytitle'] = 'Jumlah Orang'
+            pct_list[index]['xtitle'] = 'Kecamatan'
+            pct_list[index]['ytitle'] = 'Persentase Orang'
+
+        chart_list = {
+            'chart_list': [area_chart, density_chart] + qty_list + pct_list
+        }
+
+        jsonprint(chart_list)
+        return chart_list       
 
 def create_chart_by_field_qty(region_list, category):
     global DATABASE
