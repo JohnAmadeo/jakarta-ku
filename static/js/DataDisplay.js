@@ -19,7 +19,7 @@ class DataDisplay extends React.Component {
     this.onSelectComparison = this.onSelectComparison.bind(this);
 
     this.state = {
-      selectedComparison: "category"
+      selectedComparison: "field"
     }
   }
   onSelectComparison(comparison, event) {
@@ -33,12 +33,13 @@ class DataDisplay extends React.Component {
         <div className="container">
           <ComparisonBar 
             onSelectComparison={this.onSelectComparison}
-            selectedComparison={this.state.selectedComparison} />
-          <LoremIpsum />
+            selectedComparison={this.state.selectedComparison} 
+            selectedRegionList={this.props.selectedRegionList}/>
           <ChartList 
             selectedCategory={this.props.selectedCategory}
             selectedComparison={this.state.selectedComparison}
             selectedRegionList={this.props.selectedRegionList}/>
+            <LoremIpsum />
         </div>
       </div>
     )
@@ -46,7 +47,7 @@ class DataDisplay extends React.Component {
 }
 
 DataDisplay.propTypes = {
-  selectedComparison: React.PropTypes.oneOf(["category", "region"])
+  selectedComparison: React.PropTypes.oneOf(["field", "region"])
 }
 
 {/* Props
@@ -69,15 +70,16 @@ class ComparisonBar extends React.Component {
     return (
       <div className="ComparisonBar">
         <Button 
-          key={1} text={"Bandingkan kategori"} 
-          selected={this.isComparisonSelected("category")}
+          key={1} text={"Bandingkan bidang"} 
+          selected={this.isComparisonSelected("field")}
           onButtonClick={this.props.onSelectComparison
-                                   .bind(this, "category")}/>
-        <Button 
-          key={2} text={"Bandingkan kecamatan"}
-          selected={this.isComparisonSelected("region")}
-          onButtonClick={this.props.onSelectComparison
-                                   .bind(this, "region")}/>
+                                   .bind(this, "field")}/>
+        {this.props.selectedRegionList.length < 2 ?
+         null : (<Button 
+                  key={2} text={"Bandingkan kecamatan"}
+                  selected={this.isComparisonSelected("region")}
+                  onButtonClick={this.props.onSelectComparison
+                                           .bind(this, "region")}/>)}
       </div>
     )
   }
