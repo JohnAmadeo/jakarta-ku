@@ -1,21 +1,21 @@
 var utils = {
   translate: function(word) {
-    const indonesian_dictionary = {
+    const indonesianDictionary = {
       pendidikan: 'education',
       demografi: 'demographics',
       agama: 'religion',
       pekerjaan: 'occupation',
       pernikahan: 'marriage'
     }
-    const english_dictionary = {
+    const englishDictionary = {
       education: 'pendidikan',
       demographics: 'demografi',
       religion: 'agama',
       occupation: 'pekerjaan',
       marriage: 'pernikahan'
     }
-    return indonesian_dictionary[word] ? indonesian_dictionary[word] :
-                                         english_dictionary[word];
+    return indonesianDictionary[word] ? 
+           indonesianDictionary[word] : englishDictionary[word];
   },
   regionList: ['cakung', 'cempaka putih', 'cengkareng', 'cilandak', 
                'cilincing', 'cipayung', 'ciracas', 'duren sawit', 
@@ -33,8 +33,8 @@ var utils = {
     Object.keys(this).filter((key) => key != "getKeys")
                      .map((key) => {console.log(key);})
   },
-  getColorPalette: function(num_colors) {
-    const bg_colors = [
+  getColorPalette: function(numColors) {
+    const bgColors = [
       'rgba(255, 131, 131, 0.2)',
       'rgba(54, 162, 235, 0.2)',
       'rgba(255, 206, 86, 0.2)',
@@ -46,7 +46,7 @@ var utils = {
       'rgba(79, 247, 135, 0.2)',
       'rgba(96, 120, 255, 0.2)',
     ];
-    const border_colors = [
+    const borderColors = [
       'rgba(255,131,131,1)',
       'rgba(54, 162, 235, 1)',
       'rgba(255, 206, 86, 1)',
@@ -59,13 +59,14 @@ var utils = {
       'rgba(96, 120, 255, 1)',
     ];
 
-    return Array(num_colors).fill('')
-                   .map(function(elem, index) {
-                    return {
-                      background: bg_colors[index % num_colors],
-                      border: border_colors[index % num_colors]
-                    }
-                   });
+    return {
+      background: Array(numColors).fill('')
+                                  .map((elem, index) => 
+                                       bgColors[index % numColors]),
+      border: Array(numColors).fill('')
+                              .map((elem, index) => 
+                                   borderColors[index % numColors])
+    }
   }  
 }
 

@@ -160,7 +160,7 @@ body {
 
 @media (min-width: 992px) {
   #app .DataDisplay .container {
-    width: 75%;
+    width: 85%;
   }  
 }
 
@@ -175,5 +175,16 @@ body {
   text-align: left;
   border-radius: 15px;
   margin: 5px 5px 5px 0px;
+}
+
+/* */
+#app .LoremIpsum {
+  display: block;
+}
+
+#app .Label {
+  color: #FF8383;
+  font-size: 24px;
+  font-weight: lighter;
 }
 

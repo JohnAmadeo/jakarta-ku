@@ -39,7 +39,6 @@ class DataDisplay extends React.Component {
             selectedCategory={this.props.selectedCategory}
             selectedComparison={this.state.selectedComparison}
             selectedRegionList={this.props.selectedRegionList}/>
-            <LoremIpsum />
         </div>
       </div>
     )

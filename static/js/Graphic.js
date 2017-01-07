@@ -3,22 +3,6 @@ import ReactDOM from 'react-dom'
 import Utils from './utils';
 import {HorizontalBar, Bar, Doughnut} from 'react-chartjs-2';
 
-{/* Props
-  - chartData (object)
-    {
-      label_list: ['SD', 'SMP', 'SMA'],
-      dat_list: [50, 34, 67]
-    }
-  - chartOptions (object)
-    {
-      field_axis_label: 'Jumlah Orang', // if bar chart
-      measure_axis_label: ' Tingkat Pendidikan', // if bar chart
-      tooltip_format: ['NUMBER', 'orang'] // run reduce on array later
-                                          // and replace 'NUMBER' w/
-                                          // actual value
-    }
-
-*/}
 {/*
   Abstraction Specifications
   - Two chart types: 'AdaptiveBar' and 'AdaptiveDoughnut'
@@ -180,4 +164,186 @@ class Chart extends React.Component {
   }
 }
 
-module.exports = Chart;
+{/* Props 
+    chartType (string)
+    'bar' or 'doughnut'
+    chartName (string)
+    'Tingkat Pendidikan antar Kecamatan'
+    dataFields (object)
+    {
+      values: [1,2,3],
+      labels: ['a','b','c']
+    }
+
+    dataOptions (object)
+    {
+      fieldAxisLabel: 'Pekerjaan'
+      measureAxisLabel: 'Jumlah Orang'
+      tooltipStringFormat: //func?
+    }
+*/}
+
+class Graphic extends React.Component {
+  constructor(props) {
+    super(props);
+    this.renderChart = this.renderChart.bind(this);
+    this.getColumnSize = this.getColumnSize.bind(this);
+  }
+  renderChart() {
+    if(this.props.chartType === 'bar') {
+      return (
+        <BarChart dataFields={this.props.dataFields}
+                  dataOptions={this.props.dataOptions} />
+      )
+    }
+    else if(this.props.chartType === 'doughnut') {
+      return (
+        <DoughnutChart dataFields={this.props.dataFields} 
+                       dataOptions={this.props.dataOptions} />)
+    }
+  }
+  getColumnSize() {
+    if(window.width < 780) {
+      return 'col-lg-12'
+    }
+    else if(this.props.chartType === 'bar' && 
+            this.props.dataFields.values.length > 8) {
+      return 'col-lg-12'
+    }
+    else return 'col-lg-6'
+  }
+  render () {
+    return (
+      <div className={'Graphic ' + this.getColumnSize()}>
+        <Label text={this.props.chartName} />
+        {/*<SharingBar />*/}
+        {this.renderChart()}
+      </div>
+    )
+  }
+}
+
+{/* Props 
+    dataFields (object)
+    {
+      values: [1,2,3],
+      labels: ['a','b','c']
+    }
+
+    dataOptions (object)
+    {
+      fieldAxisLabel: 'Pekerjaan'
+      measureAxisLabel: 'Jumlah Orang'
+      tooltipStringFormat: //func?
+    }
+*/}
+
+class BarChart extends React.Component {
+  constructor(props) {
+    super(props);
+    this.getChartData = this.getChartData.bind(this);
+    this.getChartOptions = this.getChartOptions.bind(this);
+  }
+  getChartData() {
+    const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
+    const barData = {
+        labels: this.props.dataFields.labels
+        datasets: [
+            {
+                backgroundColor: palette.background,
+                borderColor: palette.border,
+                borderWidth: 1,
+                data: this.props.dataFields.values
+            }
+        ]
+    };
+  }
+  getChartOptions(componentWidth) {
+    const tooltipStringFormat = this.props.dataOptions.tooltipStringFormat;
+    const barOptions = {
+      maintainAspectRatio: false,
+      responsive: true,
+      legend: {
+        display: false
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            min: 0,
+            mirror: true
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Jumlah Orang'
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            callback: function(label) {
+              if(label.length > 3) {
+                return (label.substr(0,3)) + '...';
+              }
+              else return label
+            },
+            fontSize: 12
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Tingkat Pendidikan'
+          }
+        }]
+      },
+      tooltips: {
+        callbacks: {
+          label: 
+        }
+      }
+    };
+  }
+  render() {
+    const componentWidth = 0; {/*document.getElementByClassNames('Chart')[0].offsetWidth;*/}
+    if(componentWidth > 780) {
+      return 
+      <Bar data={this.getChartData()} 
+           options={this.getChartOptions(componentWidth)}/>
+    }
+    else {
+      return 
+      <HorizontalBar data={this.getChartData()} 
+                     options={this.getChartOptions(componentWidth)}/>
+    }
+  }
+}
+
+class DoughnutChart extends React.Component {
+  constructor(props) {
+    super(props);
+    this.getChartData = this.getChartData.bind(this);
+    this.getChartOptions = this.getChartOptions.bind(this);
+    this.getChartSize = this.getChartSize.bind(this)
+  }
+  getChartData() {
+
+  }
+  getChartOptions() {
+
+  }
+  getChartSize() {
+
+  }
+  render() {
+    return (
+      <Doughnut data={this.getChartData()} options={this.getChartOptions()} width={this.getChartSize()}/>
+    )
+  }
+}
+
+const Label = (props) => {
+ return(
+   <p className="Label">
+     {props.text}
+   </p>
+ )
+}
+
+module.exports = Graphic;
