@@ -243,11 +243,13 @@ class BarChart extends React.Component {
     super(props);
     this.getChartData = this.getChartData.bind(this);
     this.getChartOptions = this.getChartOptions.bind(this);
+    this.getTooltipTitle = this.getTooltipTitle.bind(this);
+    this.getTooltipLabel = this.getTooltipLabel.bind(this);
   }
   getChartData() {
     const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
     const barData = {
-        labels: this.props.dataFields.labels
+        labels: this.props.dataFields.labels,
         datasets: [
             {
                 backgroundColor: palette.background,
@@ -257,6 +259,7 @@ class BarChart extends React.Component {
             }
         ]
     };
+    return barData;
   }
   getChartOptions(componentWidth) {
     const tooltipStringFormat = this.props.dataOptions.tooltipStringFormat;
@@ -295,23 +298,43 @@ class BarChart extends React.Component {
       },
       tooltips: {
         callbacks: {
-          label: 
+          label: this.getTooltipLabel,
+          title: this.getTooltipTitle
         }
       }
     };
+    return barOptions;
+  }
+  getTooltipTitle(item) {
+    return this.props.dataFields.labels[item[0].index];
+  }
+  getTooltipLabel(item) {
+    const stringFormat = this.props.dataOptions.tooltipStringFormat;
+    return stringFormat.reduce((sentence, phrase) => {
+      if(phrase === '_') {
+        return sentence + this.props.dataFields.values[item.index]
+                        + ' ';
+      }
+      else return sentence + phrase + ' ';
+    }, '')
   }
   render() {
-    const componentWidth = 0; {/*document.getElementByClassNames('Chart')[0].offsetWidth;*/}
+    console.log(window.offsetWidth);
+    console.log(document.getElementById('app').style.width);
+
+    {/*const componentWidth = 0; 
     if(componentWidth > 780) {
-      return 
-      <Bar data={this.getChartData()} 
-           options={this.getChartOptions(componentWidth)}/>
-    }
+      return */}
+      return (
+        <Bar data={this.getChartData()} 
+             options={this.getChartOptions(0)}/>
+      )
+    {/*}}
     else {
       return 
       <HorizontalBar data={this.getChartData()} 
                      options={this.getChartOptions(componentWidth)}/>
-    }
+    }*/}
   }
 }
 
