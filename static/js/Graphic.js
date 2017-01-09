@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import Utils from './utils';
+
 import {HorizontalBar, Bar, Doughnut} from 'react-chartjs-2';
+import Measure from 'react-measure';
 
 {/*
   Abstraction Specifications
@@ -188,37 +190,53 @@ class Graphic extends React.Component {
     super(props);
     this.renderChart = this.renderChart.bind(this);
     this.getColumnSize = this.getColumnSize.bind(this);
+    this.onUpdateDimensions = this.onUpdateDimensions.bind(this);
+
+    this.state = {
+      width: 0,
+      height: 0
+    }
   }
   renderChart() {
     if(this.props.chartType === 'bar') {
       return (
         <BarChart dataFields={this.props.dataFields}
-                  dataOptions={this.props.dataOptions} />
+                  dataOptions={this.props.dataOptions} 
+                  width={this.state.width}/>
       )
     }
     else if(this.props.chartType === 'doughnut') {
       return (
         <DoughnutChart dataFields={this.props.dataFields} 
-                       dataOptions={this.props.dataOptions} />)
+                       dataOptions={this.props.dataOptions} 
+                       width={this.state.width}/>)
     }
   }
   getColumnSize() {
     if(window.width < 780) {
-      return 'col-lg-12'
+      return 'col-md-12'
     }
     else if(this.props.chartType === 'bar' && 
             this.props.dataFields.values.length > 8) {
-      return 'col-lg-12'
+      return 'col-md-12'
     }
-    else return 'col-lg-6'
+    else return 'col-md-6'
+  }
+  onUpdateDimensions(dimensions) {
+    this.setState({
+      width: dimensions.width,
+      height: dimensions.height
+    })
   }
   render () {
     return (
-      <div className={'Graphic ' + this.getColumnSize()}>
-        <Label text={this.props.chartName} />
-        {/*<SharingBar />*/}
-        {this.renderChart()}
-      </div>
+      <Measure onMeasure={this.onUpdateDimensions}>
+        <div className={'Graphic ' + this.getColumnSize()}>
+          <Label text={this.props.chartName} />
+          {/*<SharingBar />*/}
+          {this.renderChart()}
+        </div>
+      </Measure>
     )
   }
 }
@@ -245,6 +263,7 @@ class BarChart extends React.Component {
     this.getChartOptions = this.getChartOptions.bind(this);
     this.getTooltipTitle = this.getTooltipTitle.bind(this);
     this.getTooltipLabel = this.getTooltipLabel.bind(this);
+    this.getTickLabel = this.getTickLabel.bind(this);
   }
   getChartData() {
     const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
@@ -264,7 +283,7 @@ class BarChart extends React.Component {
   getChartOptions(componentWidth) {
     const tooltipStringFormat = this.props.dataOptions.tooltipStringFormat;
     const barOptions = {
-      maintainAspectRatio: false,
+      maintainAspectRatio: true,
       responsive: true,
       legend: {
         display: false
@@ -282,12 +301,7 @@ class BarChart extends React.Component {
         }],
         xAxes: [{
           ticks: {
-            callback: function(label) {
-              if(label.length > 3) {
-                return (label.substr(0,3)) + '...';
-              }
-              else return label
-            },
+            callback: this.getTickLabel,
             fontSize: 12
           },
           scaleLabel: {
@@ -305,6 +319,18 @@ class BarChart extends React.Component {
     };
     return barOptions;
   }
+  getTickLabel(label) {
+    let lengthLimit = 0;
+    if(this.props.width > 768) {      lengthLimit = 25;}
+    else if(this.props.width > 600) { lengthLimit = 20;}
+    else if(this.props.width > 450) { lengthLimit = 15;}
+    else {                            lengthLimit = 10;}
+
+    if(label.length > lengthLimit) {
+      return (label.substr(0,lengthLimit - 3)) + '...';
+    }
+    else return label
+  }
   getTooltipTitle(item) {
     return this.props.dataFields.labels[item[0].index];
   }
@@ -319,16 +345,11 @@ class BarChart extends React.Component {
     }, '')
   }
   render() {
-    console.log(window.offsetWidth);
-    console.log(document.getElementById('app').style.width);
 
-    {/*const componentWidth = 0; 
-    if(componentWidth > 780) {
-      return */}
-      return (
-        <Bar data={this.getChartData()} 
-             options={this.getChartOptions(0)}/>
-      )
+    return (
+      <Bar data={this.getChartData()} 
+           options={this.getChartOptions()}/>
+    )
     {/*}}
     else {
       return 
