@@ -55,46 +55,121 @@ class ChartList extends React.Component {
   render() {
     return (
       <div className='ChartList row'>
-        <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
-                 chartType={'bar'}
-                 dataFields={{
-                   values: [10,20,30,40,50,60],
-                   labels: ['Excellent Performance', 
-                            'Good Performance',
-                            'Satisfactory Performance',
-                            'Below Average Performance', 
-                            'Insufficient Performance',
-                            'Performance not recorded']   
-                 }}
-                 dataOptions={{
-                   fieldAxis: 'Nilai',
-                   measureAxis: 'Jumlah Orang',
-                   tooltipStringFormat: ['_', 'Orang']
-                 }}/>
+        <TestBarList />                             
       </div>
     )
   }
 }
 
-
-{/* Props 
-    chartType (string)
-    'bar' or 'doughnut'
-    chartName (string)
-    'Tingkat Pendidikan antar Kecamatan'
-    dataFields (object)
-    {
-      values: [1,2,3],
-      labels: ['a','b','c']
-    }
-
-    dataOptions (object)
-    {
-      fieldAxis: 'Pekerjaan'
-      measureAxis: 'Jumlah Orang'
-      tooltipStringFormat: ['NUMBER', 'Orang']
-    }
-*/}
-
+const TestBarList = (props) => {
+  return (
+    <div>
+    <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
+             chartType={'bar'}
+             dataFields={{
+               values: [10,20,30,40,50,60, 10,20,30,40,50,60],
+               labels: ['Excellent Performance', 
+                        'Good Performance',
+                        'Satisfactory Performance',
+                        'Below Average Performance', 
+                        'Insufficient Performance',
+                        'Performance not recorded',
+                        'Excellent Performance', 
+                        'Good Performance',
+                        'Satisfactory Performance',
+                        'Below Average Performance', 
+                        'Insufficient Performance',
+                        'Performance not recorded']   
+             }}
+             dataOptions={{
+               fieldAxis: 'Nilai',
+               measureAxis: 'Jumlah Orang',
+               tooltipStringFormat: ['_', 'Orang']
+             }}/>
+    <Graphic chartName={'Jumlah Orang per Status Pendidikan Title Panjang'}
+             chartType={'bar'}
+             dataFields={{
+               values: [10,20],
+               labels: ['Excellent Performance', 
+                        'Good Performance']   
+             }}
+             dataOptions={{
+               fieldAxis: 'Nilai',
+               measureAxis: 'Jumlah Orang',
+               tooltipStringFormat: ['_', 'Orang']
+             }}/>
+    <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
+             chartType={'bar'}
+             dataFields={{
+               values: [10,20,30],
+               labels: ['Excellent Performance', 
+                        'Good Performance',
+                        'Sufficient Performance']   
+             }}
+             dataOptions={{
+               fieldAxis: 'Nilai',
+               measureAxis: 'Jumlah Orang',
+               tooltipStringFormat: ['_', 'Orang']
+             }}/>
+    <Graphic chartName={'Jumlah Orang per Status Pendidikan Title Panjang'}
+             chartType={'bar'}
+             dataFields={{
+               values: [10,20],
+               labels: ['Excellent Performance', 
+                        'Good Performance']   
+             }}
+             dataOptions={{
+               fieldAxis: 'Nilai',
+               measureAxis: 'Jumlah Orang',
+               tooltipStringFormat: ['_', 'Orang']
+             }}/>                 
+    <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
+             chartType={'bar'}
+             dataFields={{
+               values: [10,20,30,40],
+               labels: ['Excellent Performance', 
+                        'Good Performance',
+                        'Sufficient Performance',
+                        'Poor Performance']   
+             }}
+             dataOptions={{
+               fieldAxis: 'Nilai',
+               measureAxis: 'Jumlah Orang',
+               tooltipStringFormat: ['_', 'Orang']
+             }}/>
+    <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
+             chartType={'bar'}
+             dataFields={{
+               values: [10,20,30,40,50],
+               labels: ['Excellent Performance', 
+                        'Good Performance',
+                        'Sufficient Performance',
+                        'Poor Performance',
+                        'Performance Not Recorded']   
+             }}
+             dataOptions={{
+               fieldAxis: 'Nilai',
+               measureAxis: 'Jumlah Orang',
+               tooltipStringFormat: ['_', 'Orang']
+             }}/> 
+    <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
+             chartType={'bar'}
+             dataFields={{
+               values: [10,20,30,40,50, 60],
+               labels: ['Excellent Performance', 
+                        'Good Performance',
+                        'Sufficient Performance',
+                        'Poor Performance',
+                        'Performance Not Recorded',
+                        'Performance Lost']   
+             }}
+             dataOptions={{
+               fieldAxis: 'Nilai',
+               measureAxis: 'Jumlah Orang',
+               tooltipStringFormat: ['_', 'Orang']
+             }}/>   
+    </div>
+  )
+}
 
 module.exports = ChartList;
