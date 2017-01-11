@@ -28,143 +28,6 @@ import Measure from 'react-measure';
     - Strong border colors, and faded inner colors
     - Inner color becomes border colors on hover
 */}
-class Chart extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    var barData = {
-        labels: ["Tidak Sekolah", "Belum Tamat/Selesai SD", "SMP", "SMA", "S1", "S2", "Tidak Sekolah", "Belum Tamat/Selesai SD", "SMP", "SMA", "S1", "S2"],
-        datasets: [
-            {
-                label: "Pendidikan",
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1,
-                data: [65, 59, 80, 81, 56, 35, 65, 59, 80, 81, 56, 35]
-            }
-        ]
-    };
-    var barOptions = {
-      maintainAspectRatio: false,
-      responsive: true,
-      legend: {
-        display: false
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            min: 0,
-            mirror: true
-          },
-          scaleLabel: {
-            display: true,
-            labelString: 'Jumlah Orang'
-          }
-        }],
-        xAxes: [{
-          ticks: {
-            callback: function(label) {
-              if(label.length > 3) {
-                return (label.substr(0,3)) + '...';
-              }
-              else return label
-            },
-            fontSize: 12
-          },
-          scaleLabel: {
-            display: true,
-            labelString: 'Tingkat Pendidikan'
-          }
-        }]
-      },
-      tooltips: {
-        callbacks: {
-          label: (item) => (item.xLabel + ' Orang')
-        }
-      }
-    };
-    var pieData = {
-        labels: ["Tidak Sekolah", "Belum Tamat/Selesai SD", "SD", "SMP", "SMA", "D1", "D2", "D3", "S1", "S2"],
-        datasets: [
-            {
-                data: [0.65, 0.59, 0.80, 0.81, 0.56, 0.35, 0.23, 0.45, 0.70, 0.55],
-                backgroundColor: [
-                  'rgba(255, 131, 131, 0.2)',
-                  'rgba(54, 162, 235, 0.2)',
-                  'rgba(255, 206, 86, 0.2)',
-                  'rgba(75, 192, 192, 0.2)',
-                  'rgba(153, 102, 255, 0.2)',
-                  'rgba(255, 159, 64, 0.2)',
-                  'rgba(99, 234, 255, 0.2)',
-                  'rgba(252, 110, 63, 0.2)',
-                  'rgba(79, 247, 135, 0.2)',
-                  'rgba(96, 120, 255, 0.2)',
-                ],
-                borderColor: [
-                  'rgba(255,131,131,1)',
-                  'rgba(54, 162, 235, 1)',
-                  'rgba(255, 206, 86, 1)',
-                  'rgba(75, 192, 192, 1)',
-                  'rgba(153, 102, 255, 1)',
-                  'rgba(255, 159, 64, 1)',
-                  'rgba(99, 234, 255, 1)',
-                  'rgba(252, 110, 63, 1)',
-                  'rgba(79, 247, 135, 1)',
-                  'rgba(96, 120, 255, 1)',
-                ],
-                hoverBackgroundColor: [
-                  'rgba(255,131,131,1)',
-                  'rgba(54, 162, 235, 1)',
-                  'rgba(255, 206, 86, 1)',
-                  'rgba(75, 192, 192, 1)',
-                  'rgba(153, 102, 255, 1)',
-                  'rgba(255, 159, 64, 1)',
-                  'rgba(99, 234, 255, 1)',
-                  'rgba(252, 110, 63, 1)',
-                  'rgba(79, 247, 135, 1)',
-                  'rgba(96, 120, 255, 1)',
-                ]
-            }]
-    };
-    var pieOptions = {
-      maintainAspectRatio: true,
-      legend: {
-        display: true
-      }
-    }
-    console.log(document.getElementsByClassName('Chart'));
-    return (
-      <div className='ChartList row'>
-        <div className='col-lg-6'>
-          <div className='Chart'>
-            <h3 style={{
-              'color': '#FF8383'
-            }}> 
-              Jumlah Orang per Tingkat Pendidikan
-            </h3>
-            {/*<HorizontalBar data={barData} options={barOptions}/>*/}
-            <Doughnut data={pieData} options={pieOptions} width={520} height={420}/>
-          </div>
-        </div>
-      </div>
-    )
-  }
-}
 
 {/* Props 
     chartType (string)
@@ -179,8 +42,8 @@ class Chart extends React.Component {
 
     dataOptions (object)
     {
-      fieldAxisLabel: 'Pekerjaan'
-      measureAxisLabel: 'Jumlah Orang'
+      fieldAxis: 'Pekerjaan'
+      measureAxis: 'Jumlah Orang'
       tooltipStringFormat: //func?
     }
 */}
@@ -189,7 +52,6 @@ class Graphic extends React.Component {
   constructor(props) {
     super(props);
     this.renderChart = this.renderChart.bind(this);
-    this.getColumnSize = this.getColumnSize.bind(this);
     this.onUpdateDimensions = this.onUpdateDimensions.bind(this);
 
     this.state = {
@@ -209,18 +71,9 @@ class Graphic extends React.Component {
       return (
         <DoughnutChart dataFields={this.props.dataFields} 
                        dataOptions={this.props.dataOptions} 
-                       width={this.state.width}/>)
+                       width={this.state.width}/>
+      )
     }
-  }
-  getColumnSize() {
-    if(window.width < 780) {
-      return 'col-md-12'
-    }
-    else if(this.props.chartType === 'bar' && 
-            this.props.dataFields.values.length > 8) {
-      return 'col-md-12'
-    }
-    else return 'col-md-6'
   }
   onUpdateDimensions(dimensions) {
     this.setState({
@@ -229,9 +82,10 @@ class Graphic extends React.Component {
     })
   }
   render () {
+
     return (
       <Measure onMeasure={this.onUpdateDimensions}>
-        <div className={'Graphic ' + this.getColumnSize()}>
+        <div className='Graphic'>
           <Label text={this.props.chartName} />
           {/*<SharingBar />*/}
           {this.renderChart()}
@@ -250,8 +104,8 @@ class Graphic extends React.Component {
 
     dataOptions (object)
     {
-      fieldAxisLabel: 'Pekerjaan'
-      measureAxisLabel: 'Jumlah Orang'
+      fieldAxis: 'Pekerjaan'
+      measureAxis: 'Jumlah Orang'
       tooltipStringFormat: //func?
     }
 */}
@@ -264,6 +118,11 @@ class BarChart extends React.Component {
     this.getTooltipTitle = this.getTooltipTitle.bind(this);
     this.getTooltipLabel = this.getTooltipLabel.bind(this);
     this.getTickLabel = this.getTickLabel.bind(this);
+    this.getDimensions = this.getDimensions.bind(this);
+
+    this.maxBarWidth = 130;
+    this.maxBarHeight = 450;
+    this.horizontalBarWidth = 50;
   }
   getChartData() {
     const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
@@ -280,10 +139,11 @@ class BarChart extends React.Component {
     };
     return barData;
   }
-  getChartOptions(componentWidth) {
+  getChartOptions() {
+    const isBar = $(window).width() < 1200 ? false : true;
     const tooltipStringFormat = this.props.dataOptions.tooltipStringFormat;
     const barOptions = {
-      maintainAspectRatio: true,
+      maintainAspectRatio: false,
       responsive: true,
       legend: {
         display: false
@@ -292,21 +152,26 @@ class BarChart extends React.Component {
         yAxes: [{
           ticks: {
             min: 0,
-            mirror: true
-          },
-          scaleLabel: {
-            display: true,
-            labelString: 'Jumlah Orang'
-          }
-        }],
-        xAxes: [{
-          ticks: {
-            callback: this.getTickLabel,
+            callback: ((label) => label),
+            mirror: isBar ? false : true,
             fontSize: 12
           },
           scaleLabel: {
             display: true,
-            labelString: 'Tingkat Pendidikan'
+            labelString: isBar ? this.props.dataOptions.measureAxis :
+                                 this.props.dataOptions.fieldAxis
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            min: 0,
+            callback: isBar ? this.getTickLabel : ((label) => label),
+            fontSize: 12
+          },
+          scaleLabel: {
+            display: true,
+            labelString: isBar ? this.props.dataOptions.fieldAxis : 
+                                 this.props.dataOptions.measureAxis
           }
         }]
       },
@@ -320,16 +185,30 @@ class BarChart extends React.Component {
     return barOptions;
   }
   getTickLabel(label) {
+    const windowWidth = $(window).width()
+    const numBars = this.props.dataFields.values.length;
+    const widthPct = numBars * this.maxBarWidth / windowWidth * 100;
+    const fontSize = 12;
     let lengthLimit = 0;
-    if(this.props.width > 768) {      lengthLimit = 25;}
-    else if(this.props.width > 600) { lengthLimit = 20;}
-    else if(this.props.width > 450) { lengthLimit = 15;}
-    else {                            lengthLimit = 10;}
+
+    if(widthPct < 100) {
+      lengthLimit = Math.round(this.maxBarWidth / fontSize) + 2; 
+      console.log(lengthLimit);    
+    }
+    else {      
+      lengthLimit = Math.round(
+                      (100/widthPct) * 
+                      (Math.round(this.maxBarWidth / fontSize) + 2)
+                    ); 
+      // console.log(lengthLimit);
+    }
+
+    console.log(widthPct);
 
     if(label.length > lengthLimit) {
-      return (label.substr(0,lengthLimit - 3)) + '...';
+      return (label.substr(0,lengthLimit - 2)) + '..';
     }
-    else return label
+    else return label;
   }
   getTooltipTitle(item) {
     return this.props.dataFields.labels[item[0].index];
@@ -344,18 +223,38 @@ class BarChart extends React.Component {
       else return sentence + phrase + ' ';
     }, '')
   }
-  render() {
-
-    return (
-      <Bar data={this.getChartData()} 
-           options={this.getChartOptions()}/>
-    )
-    {/*}}
+  getDimensions() {
+    const windowWidth = $(window).width();
+    const numBars = this.props.dataFields.values.length;
+    let divStyle = {};
+    if(windowWidth < 1200) {
+      const height = this.horizontalBarWidth * numBars;
+      divStyle.height = height + 'px';
+      divStyle.width = '95%';
+    }
     else {
-      return 
-      <HorizontalBar data={this.getChartData()} 
-                     options={this.getChartOptions(componentWidth)}/>
-    }*/}
+      divStyle.height = this.maxBarHeight + 'px';
+      const width = numBars * this.maxBarWidth / windowWidth * 100;
+      divStyle.width = width > 100 ? '100%' : (width + '%');
+      console.log(width);
+    }
+
+    return divStyle;
+  }
+  render() {
+    let windowWidth = $(window).width();
+    return (
+      <div className='BarChart' style={this.getDimensions()}>
+        {windowWidth < 1200 ? 
+        <HorizontalBar data={this.getChartData()} 
+                       options={this.getChartOptions()} />     
+        :
+        <Bar data={this.getChartData()} 
+             options={this.getChartOptions()} />
+        }                                            
+        <p>{windowWidth}</p>
+      </div>
+    )
   }
 }
 

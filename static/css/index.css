@@ -177,14 +177,38 @@ body {
   margin: 5px 5px 5px 0px;
 }
 
-/* */
-#app .LoremIpsum {
-  display: block;
+/* Label */
+@media (min-width: 992px) {
+  #app .Label {
+    font-size: 24px
+  }
+}
+
+@media (min-width: 0px) and (max-width: 992px) {
+  #app .Label {
+    font-size: 18px
+  }
 }
 
 #app .Label {
   color: #FF8383;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: lighter;
 }
 
+/* Graphic */
+#app .Graphic {
+  /*margin: 5px;*/
+  /*border: 1px solid blue;*/
+  padding: 10px;
+  margin: 0 0 100px 0;
+  border: 1px solid #FF8383;
+}
+
+#app .Graphic:hover {
+}
+
+/* BarChart */
+#app .BarChart {
+  padding: 10px;
+}

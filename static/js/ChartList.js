@@ -24,7 +24,6 @@ class ChartList extends React.Component {
     }
   }
   componentWillMount() {
-    console.log(window);
     Axios.post('/charts', {
       comparison: this.props.selectedComparison,
       region_list: this.props.selectedRegionList.length === 0 ? 
@@ -59,12 +58,17 @@ class ChartList extends React.Component {
         <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
                  chartType={'bar'}
                  dataFields={{
-                   values: [10,20,30],
-                   labels: ['A', 'B', 'C']   
+                   values: [10,20,30,40,50,60],
+                   labels: ['Excellent Performance', 
+                            'Good Performance',
+                            'Satisfactory Performance',
+                            'Below Average Performance', 
+                            'Insufficient Performance',
+                            'Performance not recorded']   
                  }}
                  dataOptions={{
-                   fieldAxisLabel: 'Nilai',
-                   measureAxisLabel: 'Jumlah Orang',
+                   fieldAxis: 'Nilai',
+                   measureAxis: 'Jumlah Orang',
                    tooltipStringFormat: ['_', 'Orang']
                  }}/>
       </div>
@@ -86,8 +90,8 @@ class ChartList extends React.Component {
 
     dataOptions (object)
     {
-      fieldAxisLabel: 'Pekerjaan'
-      measureAxisLabel: 'Jumlah Orang'
+      fieldAxis: 'Pekerjaan'
+      measureAxis: 'Jumlah Orang'
       tooltipStringFormat: ['NUMBER', 'Orang']
     }
 */}
