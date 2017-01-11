@@ -7,19 +7,6 @@ import Measure from 'react-measure';
 
 {/*
   Abstraction Specifications
-  - Two chart types: 'AdaptiveBar' and 'AdaptiveDoughnut'
-  - AdaptiveBar Specifications
-      - Below col-lg breakpoint:
-          - Horizontal Bar w/ mirrored ticks
-          - Size takes up entire screen
-      - Above col-lg breakpoint:
-          - Vertical Bar
-          - Truncated labels w/ ellipsis ending
-            - Make sure tooltip strings are not truncated
-          - More than x bars:
-            - Make size col-lg-12
-          - Less than x bars:
-            - Make size col-lg-6
   - AdaptiveDoughnut Specifications
       - Modify chart width/height ratio at multiple breakpoints to
         prevent chart from being too big
@@ -53,6 +40,11 @@ class Graphic extends React.Component {
     super(props);
     this.renderChart = this.renderChart.bind(this);
     this.onUpdateDimensions = this.onUpdateDimensions.bind(this);
+    this.getDimensions = this.getDimensions.bind(this);
+
+    this.maxBarWidth = 130;
+    this.maxBarHeight = 450;
+    this.horizontalBarWidth = 50;
 
     this.state = {
       width: 0,
@@ -64,7 +56,7 @@ class Graphic extends React.Component {
       return (
         <BarChart dataFields={this.props.dataFields}
                   dataOptions={this.props.dataOptions} 
-                  width={this.state.width}/>
+                  maxBarWidth={this.maxBarWidth}/>
       )
     }
     else if(this.props.chartType === 'doughnut') {
@@ -81,12 +73,30 @@ class Graphic extends React.Component {
       height: dimensions.height
     })
   }
+  getDimensions() {
+    const windowWidth = $(window).width();
+    const numBars = this.props.dataFields.values.length;
+    let divStyle = {};
+    if(windowWidth < 1200) {
+      const height = (this.horizontalBarWidth * numBars) + 91;
+      divStyle.height = height + 'px';
+      divStyle.width = '95%';
+    }
+    else {
+      divStyle.height = this.maxBarHeight + 'px';
+      const widthPct = (numBars * this.maxBarWidth + 127) / windowWidth * 100;
+      divStyle.width = widthPct > 100 ? '100%' : (widthPct + '%');
+      console.log(widthPct);
+    }
+
+    return divStyle;
+  }
   render () {
 
     return (
       <Measure onMeasure={this.onUpdateDimensions}>
-        <div className='Graphic'>
-          <Label text={this.props.chartName} />
+        <div className='Graphic' style={this.getDimensions()}>
+          <Title text={this.props.chartName} />
           {/*<SharingBar />*/}
           {this.renderChart()}
         </div>
@@ -108,6 +118,9 @@ class Graphic extends React.Component {
       measureAxis: 'Jumlah Orang'
       tooltipStringFormat: //func?
     }
+
+    maxBarWidth (integer)
+    - maximum width of a bar in a chart
 */}
 
 class BarChart extends React.Component {
@@ -118,11 +131,6 @@ class BarChart extends React.Component {
     this.getTooltipTitle = this.getTooltipTitle.bind(this);
     this.getTooltipLabel = this.getTooltipLabel.bind(this);
     this.getTickLabel = this.getTickLabel.bind(this);
-    this.getDimensions = this.getDimensions.bind(this);
-
-    this.maxBarWidth = 130;
-    this.maxBarHeight = 450;
-    this.horizontalBarWidth = 50;
   }
   getChartData() {
     const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
@@ -187,23 +195,20 @@ class BarChart extends React.Component {
   getTickLabel(label) {
     const windowWidth = $(window).width()
     const numBars = this.props.dataFields.values.length;
-    const widthPct = numBars * this.maxBarWidth / windowWidth * 100;
+    const widthPct = numBars * this.props.maxBarWidth / windowWidth * 100;
     const fontSize = 12;
     let lengthLimit = 0;
 
     if(widthPct < 100) {
-      lengthLimit = Math.round(this.maxBarWidth / fontSize) + 2; 
+      lengthLimit = Math.round(this.props.maxBarWidth / fontSize) + 2; 
       console.log(lengthLimit);    
     }
     else {      
       lengthLimit = Math.round(
                       (100/widthPct) * 
-                      (Math.round(this.maxBarWidth / fontSize) + 2)
+                      (Math.round(this.props.maxBarWidth / fontSize) + 2)
                     ); 
-      // console.log(lengthLimit);
     }
-
-    console.log(widthPct);
 
     if(label.length > lengthLimit) {
       return (label.substr(0,lengthLimit - 2)) + '..';
@@ -223,28 +228,10 @@ class BarChart extends React.Component {
       else return sentence + phrase + ' ';
     }, '')
   }
-  getDimensions() {
-    const windowWidth = $(window).width();
-    const numBars = this.props.dataFields.values.length;
-    let divStyle = {};
-    if(windowWidth < 1200) {
-      const height = this.horizontalBarWidth * numBars;
-      divStyle.height = height + 'px';
-      divStyle.width = '95%';
-    }
-    else {
-      divStyle.height = this.maxBarHeight + 'px';
-      const width = numBars * this.maxBarWidth / windowWidth * 100;
-      divStyle.width = width > 100 ? '100%' : (width + '%');
-      console.log(width);
-    }
-
-    return divStyle;
-  }
   render() {
     let windowWidth = $(window).width();
     return (
-      <div className='BarChart' style={this.getDimensions()}>
+      <div className='BarChart' style={{width: '100%', height: '100%'}}>
         {windowWidth < 1200 ? 
         <HorizontalBar data={this.getChartData()} 
                        options={this.getChartOptions()} />     
@@ -252,7 +239,6 @@ class BarChart extends React.Component {
         <Bar data={this.getChartData()} 
              options={this.getChartOptions()} />
         }                                            
-        <p>{windowWidth}</p>
       </div>
     )
   }
@@ -281,9 +267,9 @@ class DoughnutChart extends React.Component {
   }
 }
 
-const Label = (props) => {
+const Title = (props) => {
  return(
-   <p className="Label">
+   <p className="Title">
      {props.text}
    </p>
  )

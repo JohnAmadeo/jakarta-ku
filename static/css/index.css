@@ -177,32 +177,33 @@ body {
   margin: 5px 5px 5px 0px;
 }
 
-/* Label */
+/* Title */
 @media (min-width: 992px) {
-  #app .Label {
+  #app .Title {
     font-size: 24px
   }
 }
 
 @media (min-width: 0px) and (max-width: 992px) {
-  #app .Label {
+  #app .Title {
     font-size: 18px
   }
 }
 
-#app .Label {
+#app .Title {
   color: #FF8383;
   font-size: 18px;
   font-weight: lighter;
+  /*border: 1px solid blue;*/
+  border-radius: 0;
 }
 
 /* Graphic */
 #app .Graphic {
-  /*margin: 5px;*/
-  /*border: 1px solid blue;*/
   padding: 10px;
   margin: 0 0 100px 0;
-  border: 1px solid #FF8383;
+  /*border: 1px solid #FF8383;*/
+  display: inline-block;
 }
 
 #app .Graphic:hover {
