@@ -150,19 +150,8 @@ body {
 /* DataDisplay */
 #app .DataDisplay .container {
   margin: 15px auto 0 auto;
-} 
-
-@media (min-width: 0px) and (max-width: 992px) {
-  #app .DataDisplay .container {
-    width: 95%;
-  }  
-}
-
-@media (min-width: 992px) {
-  #app .DataDisplay .container {
-    width: 85%;
-  }  
-}
+  width: 85%;
+}  
 
 /* ComparisonBar */
 #app .ComparisonBar {
@@ -175,6 +164,14 @@ body {
   text-align: left;
   border-radius: 15px;
   margin: 5px 5px 5px 0px;
+}
+
+/* Graphic */
+#app .Graphic {
+  padding: 10px;
+  margin: 0 0 100px 0;
+  /*border: 1px solid #FF8383;*/
+  display: inline-block;
 }
 
 /* Title */
@@ -198,18 +195,8 @@ body {
   border-radius: 0;
 }
 
-/* Graphic */
-#app .Graphic {
-  padding: 10px;
-  margin: 0 0 100px 0;
-  /*border: 1px solid #FF8383;*/
-  display: inline-block;
-}
-
-#app .Graphic:hover {
-}
-
 /* BarChart */
 #app .BarChart {
   padding: 10px;
 }
+

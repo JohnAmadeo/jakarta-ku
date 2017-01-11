@@ -62,8 +62,7 @@ class Graphic extends React.Component {
     else if(this.props.chartType === 'doughnut') {
       return (
         <DoughnutChart dataFields={this.props.dataFields} 
-                       dataOptions={this.props.dataOptions} 
-                       width={this.state.width}/>
+                       dataOptions={this.props.dataOptions}/>
       )
     }
   }
@@ -74,21 +73,46 @@ class Graphic extends React.Component {
     })
   }
   getDimensions() {
-    const windowWidth = $(window).width();
-    const numBars = this.props.dataFields.values.length;
     let divStyle = {};
-    if(windowWidth < 1200) {
-      const height = (this.horizontalBarWidth * numBars) + 91;
-      divStyle.height = height + 'px';
-      divStyle.width = '95%';
-    }
-    else {
-      divStyle.height = this.maxBarHeight + 'px';
-      const widthPct = (numBars * this.maxBarWidth + 127) / windowWidth * 100;
-      divStyle.width = widthPct > 100 ? '100%' : (widthPct + '%');
-      console.log(widthPct);
-    }
+    const windowWidth = $(window).width();
+    const numValues = this.props.dataFields.values.length;
 
+    if(this.props.chartType === 'bar') {
+      if(windowWidth < 1200) {
+        const height = (this.horizontalBarWidth * numValues) + 91;
+        divStyle.height = height + 'px';
+        divStyle.width = '95%';
+      }
+      else {
+        divStyle.height = this.maxBarHeight + 'px';
+        const widthPct = (numValues * this.maxBarWidth + 127) / 
+                         windowWidth * 100;
+        divStyle.width = widthPct > 100 ? '100%' : (widthPct + '%');
+        console.log(widthPct);
+      }
+    }
+    else if(this.props.chartType === 'doughnut') {
+      let componentWidth = 0;
+      if(windowWidth < 1200) {
+        componentWidth = 0.85 * 0.95 * windowWidth;
+        divStyle.width = '95%';
+      }
+      else {
+        componentWidth = 0.85 * 0.40 * windowWidth;   
+        divStyle.width = '40%';    
+      }
+
+      const avgLabelLength = 
+        this.props.dataFields.labels
+        .reduce((sum, label) => sum + label.length, 0)
+        * 12 / numValues;
+
+      const numLegendLines = 
+        Math.round((numValues * (avgLabelLength + 50)) / componentWidth);
+      const height = 300 + (numLegendLines * 20);
+
+      divStyle.height =  height + 'px'; 
+    }
     return divStyle;
   }
   render () {
@@ -249,20 +273,42 @@ class DoughnutChart extends React.Component {
     super(props);
     this.getChartData = this.getChartData.bind(this);
     this.getChartOptions = this.getChartOptions.bind(this);
-    this.getChartSize = this.getChartSize.bind(this)
+    this.getLegendLabel = this.getLegendLabel.bind(this);
+  }
+  getLegendLabel() {
+
   }
   getChartData() {
-
+    const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
+    var pieData = {
+        labels: this.props.dataFields.labels,
+        datasets: [
+          {
+            backgroundColor: palette.background,
+            borderColor: palette.border,
+            hoverBackgroundColor: palette.border,
+            data: this.props.dataFields.values
+          }
+        ]
+    };
+    return pieData;
   }
   getChartOptions() {
-
-  }
-  getChartSize() {
-
+    var pieOptions = {
+      maintainAspectRatio: false,
+      legend: {
+        display: true
+      }
+    };
+    return pieOptions;
   }
   render() {
     return (
-      <Doughnut data={this.getChartData()} options={this.getChartOptions()} width={this.getChartSize()}/>
+      <div className='DoughnutChart' 
+           style={{width: '100%', height: '100%'}}>
+      <Doughnut data={this.getChartData()} 
+                options={this.getChartOptions()} />
+      </div>
     )
   }
 }

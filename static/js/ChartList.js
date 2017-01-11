@@ -54,8 +54,7 @@ class ChartList extends React.Component {
   }
   render() {
     return (
-      <div className='ChartList row'>
-        <TestBarList />                             
+      <div className='ChartList row'>     
       </div>
     )
   }
@@ -168,6 +167,83 @@ const TestBarList = (props) => {
                measureAxis: 'Jumlah Orang',
                tooltipStringFormat: ['_', 'Orang']
              }}/>   
+    </div>
+  )
+}
+
+const TestDoughnutList = (props) => {
+  return (
+    <div>
+      <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
+               chartType={'doughnut'}
+               dataFields={{
+                 values: [10,20,30,40,50,60,10,20,30,40,50,60],
+                 labels: ['Excellent Performance', 
+                          'Good Performance',
+                          'Satisfactory Performance',
+                          'Below Average Performance', 
+                          'Insufficient Performance',
+                          'Performance not recorded',
+                          'Excellent Performance', 
+                          'Good Performance',
+                          'Satisfactory Performance',
+                          'Below Average Performance', 
+                          'Insufficient Performance',
+                          'Performance not recorded']   
+               }}
+               dataOptions={{
+                 fieldAxis: 'Nilai',
+                 measureAxis: 'Jumlah Orang',
+                 tooltipStringFormat: ['_', 'Orang']
+               }}/> 
+      <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
+               chartType={'doughnut'}
+               dataFields={{
+                 values: [10,20,30],
+                 labels: ['Excellent Performance', 
+                          'Good Performance',
+                          'Satisfactory Performance']   
+               }}
+               dataOptions={{
+                 fieldAxis: 'Nilai',
+                 measureAxis: 'Jumlah Orang',
+                 tooltipStringFormat: ['_', 'Orang']
+               }}/>
+      <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
+               chartType={'doughnut'}
+               dataFields={{
+                 values: [10,20,30,40,50,60,10,20,30,40,50,60],
+                 labels: ['Excellent Performance', 
+                          'Good Performance',
+                          'Satisfactory Performance',
+                          'Below Average Performance', 
+                          'Insufficient Performance',
+                          'Performance not recorded',
+                          'Excellent Performance', 
+                          'Good Performance',
+                          'Satisfactory Performance',
+                          'Below Average Performance', 
+                          'Insufficient Performance',
+                          'Performance not recorded']   
+               }}
+               dataOptions={{
+                 fieldAxis: 'Nilai',
+                 measureAxis: 'Jumlah Orang',
+                 tooltipStringFormat: ['_', 'Orang']
+               }}/> 
+      <Graphic chartName={'Jumlah Orang per Status Pendidikan'}
+               chartType={'doughnut'}
+               dataFields={{
+                 values: [10,20,30],
+                 labels: ['Excellent Performance', 
+                          'Good Performance',
+                          'Satisfactory Performance']   
+               }}
+               dataOptions={{
+                 fieldAxis: 'Nilai',
+                 measureAxis: 'Jumlah Orang',
+                 tooltipStringFormat: ['_', 'Orang']
+               }}/>
     </div>
   )
 }
