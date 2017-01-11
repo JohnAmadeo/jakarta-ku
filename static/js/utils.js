@@ -58,14 +58,15 @@ var utils = {
       'rgba(79, 247, 135, 1)',
       'rgba(96, 120, 255, 1)',
     ];
+    const paletteSize = 10;
 
     return {
       background: Array(numColors).fill('')
                                   .map((elem, index) => 
-                                       bgColors[index % numColors]),
+                                       bgColors[index % paletteSize]),
       border: Array(numColors).fill('')
                               .map((elem, index) => 
-                                   borderColors[index % numColors])
+                                   borderColors[index % paletteSize])
     }
   }  
 }
