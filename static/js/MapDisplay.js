@@ -114,7 +114,7 @@ class Region extends React.Component {
         onButtonClick={this.props.onSelectRegion
                                  .bind(this, this.props.region)} 
         key={this.props.key}
-        selected={this.props.isRegionSelected(this.props.region)}
+        isSelected={this.props.isRegionSelected(this.props.region)}
         text={this.capitalizeName(this.props.region)} />
     )
   }

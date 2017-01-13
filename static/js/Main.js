@@ -106,7 +106,7 @@ class CategoryBar extends React.Component {
           onButtonClick={this.props.onSelectCategory
                                    .bind(this, category)}
           key={index}
-          selected={this.isCategorySelected(category)}
+          isSelected={this.isCategorySelected(category)}
           text={categoryInIndo[0].toUpperCase() + 
                 categoryInIndo.substr(1)} />
       )
