@@ -17,6 +17,25 @@ body {
   color: #000000;
 }
 
+/* Button */
+#app .Button .not-selected {
+  background-color: #FFFFFF;
+  color: #FF8383;
+  border: 1px solid #FF8383;
+}
+
+#app .Button .selected {
+  background-color: #FF8383;
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF; 
+}
+
+#app .Button .btn:hover {
+  background-color: #FF8383;
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;   
+}
+
 /* CategoryBar */
 #app .CategoryBar {
   /*border: 1px solid blue;*/
