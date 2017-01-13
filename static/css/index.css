@@ -144,7 +144,17 @@ body {
 
 #app .JakartaMap path:hover {
   fill: #FF8383;
-  /*stroke: #000000;*/
+  stroke: #CC4B4B;
+}
+
+#app .JakartaMap .selected {
+  fill: #FF8383;
+  stroke: #CC4B4B;
+}
+
+#app .JakartaMap .not-selected {
+  fill: #FFFFFF;
+  stroke: #FF8383;
 }
 
 /* DataDisplay */
