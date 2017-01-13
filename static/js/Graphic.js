@@ -88,7 +88,6 @@ class Graphic extends React.Component {
         const widthPct = (numValues * this.maxBarWidth + 127) / 
                          windowWidth * 100;
         divStyle.width = widthPct > 100 ? '100%' : (widthPct + '%');
-        console.log(widthPct);
       }
     }
     else if(this.props.chartType === 'doughnut') {
@@ -154,7 +153,8 @@ class BarChart extends React.Component {
     this.getChartOptions = this.getChartOptions.bind(this);
     this.getTooltipTitle = this.getTooltipTitle.bind(this);
     this.getTooltipLabel = this.getTooltipLabel.bind(this);
-    this.getTickLabel = this.getTickLabel.bind(this);
+    this.getFieldTickLabel = this.getFieldTickLabel.bind(this);
+    this.getMeasureTickLabel = this.getMeasureTickLabel.bind(this);
   }
   getChartData() {
     const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
@@ -184,7 +184,8 @@ class BarChart extends React.Component {
         yAxes: [{
           ticks: {
             min: 0,
-            callback: ((label) => label),
+            callback: isBar ? this.getMeasureTickLabel :
+                              ((label) => label),
             mirror: isBar ? false : true,
             fontSize: 12
           },
@@ -197,7 +198,8 @@ class BarChart extends React.Component {
         xAxes: [{
           ticks: {
             min: 0,
-            callback: isBar ? this.getTickLabel : ((label) => label),
+            callback: isBar ? this.getFieldTickLabel : 
+                              this.getMeasureTickLabel,
             fontSize: 12
           },
           scaleLabel: {
@@ -216,7 +218,7 @@ class BarChart extends React.Component {
     };
     return barOptions;
   }
-  getTickLabel(label) {
+  getFieldTickLabel(label) {
     const windowWidth = $(window).width()
     const numBars = this.props.dataFields.values.length;
     const widthPct = numBars * this.props.maxBarWidth / windowWidth * 100;
@@ -225,7 +227,6 @@ class BarChart extends React.Component {
 
     if(widthPct < 100) {
       lengthLimit = Math.round(this.props.maxBarWidth / fontSize) + 2; 
-      console.log(lengthLimit);    
     }
     else {      
       lengthLimit = Math.round(
@@ -239,6 +240,11 @@ class BarChart extends React.Component {
     }
     else return label;
   }
+  getMeasureTickLabel(label) {
+    // return Number(label).toFixed(2);
+    const num = Number(label);
+    return parseInt(num) === num ? num : num.toFixed(1);
+  }
   getTooltipTitle(item) {
     return this.props.dataFields.labels[item[0].index];
   }
@@ -246,11 +252,10 @@ class BarChart extends React.Component {
     const stringFormat = this.props.dataOptions.tooltipStringFormat;
     return stringFormat.reduce((sentence, phrase) => {
       if(phrase === '_') {
-        return sentence + this.props.dataFields.values[item.index]
-                        + ' ';
+        return sentence + this.props.dataFields.values[item.index];
       }
       else return sentence + phrase + ' ';
-    }, '')
+    }, '');
   }
   render() {
     let windowWidth = $(window).width();
@@ -273,10 +278,7 @@ class DoughnutChart extends React.Component {
     super(props);
     this.getChartData = this.getChartData.bind(this);
     this.getChartOptions = this.getChartOptions.bind(this);
-    this.getLegendLabel = this.getLegendLabel.bind(this);
-  }
-  getLegendLabel() {
-
+    this.getTooltipLabel = this.getTooltipLabel.bind(this);
   }
   getChartData() {
     const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
@@ -298,9 +300,23 @@ class DoughnutChart extends React.Component {
       maintainAspectRatio: false,
       legend: {
         display: true
+      },
+      tooltips: {
+        callbacks: {
+          label: this.getTooltipLabel
+        }
       }
     };
     return pieOptions;
+  }
+  getTooltipLabel(item) {
+    const stringFormat = this.props.dataOptions.tooltipStringFormat;
+    return stringFormat.reduce((sentence, phrase) => {
+      if(phrase === '_') {
+        return sentence + this.props.dataFields.values[item.index];
+      }
+      else return sentence + phrase + ' ';
+    }, '');
   }
   render() {
     return (
