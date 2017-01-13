@@ -37,24 +37,31 @@ class ChartList extends React.Component {
     })
     .catch((err) => {});    
   }
-  componentWillReceiveProps() {
+  componentWillReceiveProps(newProps) {
     Axios.post('/charts', {
-      comparison: this.props.selectedComparison,
-      region_list: this.props.selectedRegionList.length === 0 ? 
-                   Utils.regionList : this.props.selectedRegionList,
-      category: this.props.selectedCategory
+      comparison: newProps.selectedComparison,
+      region_list: newProps.selectedRegionList.length === 0 ? 
+                   Utils.regionList : newProps.selectedRegionList,
+      category: newProps.selectedCategory
     })
     .then((response) => {
-      console.log(response.data.chart_list)
+      console.log(response);
       this.setState({
-        chartList: response.data.chart_list
+        chartList: response.data.chartList
       });
     })
     .catch((err) => {console.log(err);});
   }
   render() {
     return (
-      <div className='ChartList row'>     
+      <div className='ChartList row'>
+        {this.state.chartList.map((chart, index) => 
+          (<Graphic chartType={chart.chartType} 
+                    chartName={chart.chartName}
+                    dataFields={chart.dataFields}
+                    dataOptions={chart.dataOptions}
+                    key={index}/>)
+        )}
       </div>
     )
   }
