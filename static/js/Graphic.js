@@ -5,6 +5,7 @@ import Utils from './utils';
 import {HorizontalBar, Bar, Doughnut} from 'react-chartjs-2';
 import Measure from 'react-measure';
 
+
 {/*
   Abstraction Specifications
   - AdaptiveDoughnut Specifications
@@ -48,21 +49,37 @@ class Graphic extends React.Component {
 
     this.state = {
       width: 0,
-      height: 0
+      height: 0,
+      shouldRedraw: false
     }
+  }
+  componentWillReceiveProps(newProps) {
+    this.setState({
+      shouldRedraw: this.props.dataFields.values === 
+                    newProps.dataFields.values.length ? false : true
+
+    })
   }
   renderChart() {
     if(this.props.chartType === 'bar') {
       return (
+        <TestBarChart dataFields={this.props.dataFields}
+                      dataOptions={this.props.dataOptions} 
+                      maxBarWidth={this.maxBarWidth}
+                      shouldRedraw={this.state.shouldRedraw}/>
+      )
+      {/*return (
         <BarChart dataFields={this.props.dataFields}
                   dataOptions={this.props.dataOptions} 
-                  maxBarWidth={this.maxBarWidth}/>
-      )
+                  maxBarWidth={this.maxBarWidth}
+                  shouldRedraw={this.state.shouldRedraw}/>
+      )*/}
     }
     else if(this.props.chartType === 'doughnut') {
       return (
         <DoughnutChart dataFields={this.props.dataFields} 
-                       dataOptions={this.props.dataOptions}/>
+                       dataOptions={this.props.dataOptions}
+                       shouldRedraw={this.state.shouldRedraw}/>
       )
     }
   }
@@ -74,7 +91,8 @@ class Graphic extends React.Component {
   }
   getDimensions() {
     let divStyle = {};
-    const windowWidth = $(window).width();
+    {/*const windowWidth = $(window).width();*/}
+    const windowWidth = 1300;
     const numValues = this.props.dataFields.values.length;
 
     if(this.props.chartType === 'bar') {
@@ -112,6 +130,7 @@ class Graphic extends React.Component {
 
       divStyle.height =  height + 'px'; 
     }
+
     return divStyle;
   }
   render () {
@@ -126,6 +145,12 @@ class Graphic extends React.Component {
       </Measure>
     )
   }
+}
+
+Graphic.propTypes = {
+  width: React.PropTypes.number,
+  height: React.PropTypes.number,
+  shouldRedraw: React.PropTypes.bool,
 }
 
 {/* Props 
@@ -144,7 +169,83 @@ class Graphic extends React.Component {
 
     maxBarWidth (integer)
     - maximum width of a bar in a chart
+
+    shouldRedraw (bool)
+    - true if chart should be redrawn to 
+      adjust chart size; false otherwise
 */}
+
+class TestBarChart extends React.Component {
+  constructor(props) {
+    super(props);
+    this.getChartData = this.getChartData.bind(this);
+    this.getChartOptions = this.getChartOptions.bind(this);
+  }
+  getChartData() {
+    const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
+    const barData = {
+        labels: this.props.dataFields.labels,
+        datasets: [
+            {
+                backgroundColor: palette.background,
+                borderColor: palette.border,
+                borderWidth: 1,
+                data: this.props.dataFields.values
+            }
+        ]
+    };
+    return barData;
+  }
+  getChartOptions() {
+    const tooltipStringFormat = this.props.dataOptions.tooltipStringFormat;
+    const barOptions = {
+      maintainAspectRatio: false,
+      responsive: true,
+      legend: {
+        display: false
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            min: 0,
+            callback: ((label) => label),
+            fontSize: 12
+          },
+          scaleLabel: {
+            display: true,
+            labelString: this.props.dataOptions.measureAxis
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            min: 0,
+            fontSize: 12
+          },
+          scaleLabel: {
+            display: true,
+            labelString: this.props.dataOptions.fieldAxis 
+          }
+        }]
+      },
+      tooltips: {
+        callbacks: {
+          label: ((label) => label),
+          title: ((title) => title)
+        }
+      }
+    };
+    return barOptions;
+  }
+  render() {
+    return (
+      <div className='TestBarChart' style={{width: '100%', height: '100%'}}>
+        <Bar data={this.getChartData()} 
+             options={this.getChartOptions()} 
+             redraw={this.props.shouldRedraw}/>
+      </div>
+    )
+  }
+}
 
 class BarChart extends React.Component {
   constructor(props) {
@@ -263,10 +364,12 @@ class BarChart extends React.Component {
       <div className='BarChart' style={{width: '100%', height: '100%'}}>
         {windowWidth < 1200 ? 
         <HorizontalBar data={this.getChartData()} 
-                       options={this.getChartOptions()} />     
+                       options={this.getChartOptions()} 
+                       redraw={this.props.shouldRedraw}/>     
         :
         <Bar data={this.getChartData()} 
-             options={this.getChartOptions()} />
+             options={this.getChartOptions()} 
+             redraw={this.props.shouldRedraw}/>
         }                                            
       </div>
     )
@@ -322,8 +425,9 @@ class DoughnutChart extends React.Component {
     return (
       <div className='DoughnutChart' 
            style={{width: '100%', height: '100%'}}>
-      <Doughnut data={this.getChartData()} 
-                options={this.getChartOptions()} />
+        <Doughnut data={this.getChartData()} 
+                  options={this.getChartOptions()} 
+                  redraw={this.props.shouldRedraw}/>
       </div>
     )
   }
