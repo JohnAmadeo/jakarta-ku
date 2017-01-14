@@ -163,7 +163,7 @@ body {
   stroke: #FF8383;
 }
 
-#app .JakartaMap path:hover {
+#app .JakartaMap path.is-hovered-over {
   fill: #FF8383;
   stroke: #CC4B4B;
 }
