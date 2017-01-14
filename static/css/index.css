@@ -18,19 +18,19 @@ body {
 }
 
 /* Button */
-#app .Button .not-selected {
+#app .Button {
   background-color: #FFFFFF;
   color: #FF8383;
   border: 1px solid #FF8383;
 }
 
-#app .Button .selected {
+#app .Button.is-selected {
   background-color: #FF8383;
   color: #FFFFFF;
   border: 1px solid #FFFFFF; 
 }
 
-#app .Button .btn:hover {
+#app .Button:hover {
   background-color: #FF8383;
   color: #FFFFFF;
   border: 1px solid #FFFFFF;   
@@ -159,6 +159,8 @@ body {
   stroke-width: 3px;
   stroke-dasharray: 2,2;
   stroke-linejoin: round;
+  fill: #FFFFFF;
+  stroke: #FF8383;
 }
 
 #app .JakartaMap path:hover {
@@ -166,14 +168,9 @@ body {
   stroke: #CC4B4B;
 }
 
-#app .JakartaMap .selected {
+#app .JakartaMap path.is-selected {
   fill: #FF8383;
   stroke: #CC4B4B;
-}
-
-#app .JakartaMap .not-selected {
-  fill: #FFFFFF;
-  stroke: #FF8383;
 }
 
 /* DataDisplay */

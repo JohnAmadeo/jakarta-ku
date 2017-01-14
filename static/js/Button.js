@@ -1,5 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom';
+import ClassNames from 'classnames';
 
 {/* Props
   - onButtonClick (function)
@@ -12,21 +13,23 @@ import ReactDOM from 'react-dom'
 */}
 
 const Button = (props) => {
-  let cssClasses = {
-    selection: props.isSelected ? 'selected' : 'not-selected'
-  }
+  const cssClasses = ClassNames({
+    'btn': true, 
+    'btn-lg': true, 
+    'btn-default': true,
+    'Button': true,
+    'is-selected': props.isSelected
+  });
 
   return (
-    <span className='Button'>
       <button 
-        type="button"       
-        className={'btn btn-lg btn-default ' + cssClasses.selection}
+        type="button"
+        className={cssClasses}       
         onClick={props.onButtonClick} key={props.key}>
         {props.isSelected ? (<span>&minus; &nbsp;</span>) : 
                           (<span>&#43; &nbsp;</span>)} 
         {props.text}
       </button>
-    </span>
   )
 }
 
