@@ -30,7 +30,7 @@ body {
   border: 1px solid #FFFFFF; 
 }
 
-#app .Button:hover {
+#app .Button.is-hovered-over {
   background-color: #FF8383;
   color: #FFFFFF;
   border: 1px solid #FFFFFF;   

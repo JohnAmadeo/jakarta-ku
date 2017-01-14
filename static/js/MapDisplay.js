@@ -17,11 +17,36 @@ import Button from './Button';
 
 class MapDisplay extends React.Component {
   constructor(props) {
+    console.log(window);
     super(props);
     this.isRegionSelected = this.isRegionSelected.bind(this);
+    this.isRegionHoveredOver = this.isRegionHoveredOver.bind(this);
+    this.onHoverOnRegion = this.onHoverOnRegion.bind(this);
+
+    this.state = {
+      hoveredRegionList: []
+    }
   }
   isRegionSelected(region) {
     return this.props.selectedRegionList.includes(region);
+  }
+  isRegionHoveredOver(region) {
+    return this.state.hoveredRegionList.includes(region);
+  }
+  onHoverOnRegion(region, event) {
+    {/* Add region to hoveredRegionList if mouse hovers over region;
+        remove region from hoveredRegionList if hovering out of region */}
+    console.log(this.state.hoveredRegionList.includes(region) ? 'Out' : 'Over');
+    console.log(event.type);
+
+    const hoveredRegionList = this.state.hoveredRegionList;
+    this.setState({
+      hoveredRegionList: 
+        hoveredRegionList.includes(region) ?
+        hoveredRegionList.slice()
+                         .filter((currRegion) => currRegion != region) :
+        [...hoveredRegionList, region]
+    });
   }
   render() {
     return (
@@ -29,15 +54,23 @@ class MapDisplay extends React.Component {
         <div className="col-md-6">
           <SearchBar />
           <RegionList onSelectRegion={this.props.onSelectRegion}
-                      isRegionSelected={this.isRegionSelected}/>
+                      isRegionSelected={this.isRegionSelected}
+                      onHoverOnRegion={this.onHoverOnRegion}
+                      isRegionHoveredOver={this.isRegionHoveredOver}/>
         </div>
         <div className="col-md-6">
           <JakartaMap onSelectRegion={this.props.onSelectRegion} 
-                      isRegionSelected={this.isRegionSelected}/>
+                      isRegionSelected={this.isRegionSelected}
+                      onHoverOnRegion={this.onHoverOnRegion}
+                      isRegionHoveredOver={this.isRegionHoveredOver}/>
         </div>        
       </div>
     )
   }
+}
+
+MapDisplay.propTypes = {
+  hoveredRegionList: React.PropTypes.arrayOf(React.PropTypes.string)
 }
 
 class SearchBar extends React.Component {
@@ -66,6 +99,14 @@ class SearchBar extends React.Component {
   - onSelectRegion (function)
     event handler that updates the state of 
     regions that are currently selected 
+
+  - isRegionHoveredOver (function)
+    checking function returns true if region
+    is hovered over; false otherwise
+
+  - onHoverOnRegion (function)
+    event handler that updates state of regions currently
+    being hovered over
 */}
 
 class RegionList extends React.Component {
@@ -78,7 +119,10 @@ class RegionList extends React.Component {
         {Utils.regionList.map((region, index) => (
           <Region region={region} key={index}
                   onSelectRegion={this.props.onSelectRegion}
-                  isRegionSelected={this.props.isRegionSelected}/>
+                  isRegionSelected={this.props.isRegionSelected}
+                  onHoverOnRegion={this.props.onHoverOnRegion}
+                  isRegionHoveredOver={this.props.isRegionHoveredOver}
+                  />
         ))}
       </div>
     )
@@ -93,6 +137,14 @@ class RegionList extends React.Component {
   - onSelectRegion (function)
     event handler that updates the state of 
     regions that are currently selected 
+
+  - isRegionHoveredOver (function)
+    checking function returns true if region
+    is hovered over; false otherwise
+
+  - onHoverOnRegion (function)
+    event handler that updates state of regions currently
+    being hovered over
 
   - region (string)
     name of region
@@ -113,8 +165,11 @@ class Region extends React.Component {
       <Button 
         onButtonClick={this.props.onSelectRegion
                                  .bind(this, this.props.region)} 
+        onHover={this.props.onHoverOnRegion
+                            .bind(this, this.props.region)}
         key={this.props.key}
         isSelected={this.props.isRegionSelected(this.props.region)}
+        isHoveredOver={this.props.isRegionHoveredOver(this.props.region)}
         text={this.capitalizeName(this.props.region)} />
     )
   }

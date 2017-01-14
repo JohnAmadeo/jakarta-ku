@@ -92,9 +92,30 @@ class CategoryBar extends React.Component {
     super(props);
     this.renderButtonList = this.renderButtonList.bind(this);
     this.isCategorySelected = this.isCategorySelected.bind(this);
+    this.isCategoryHoveredOver = this.isCategoryHoveredOver.bind(this);
+    this.onHoverOnCategory = this.onHoverOnCategory.bind(this);
+
+    this.state = {
+      hoveredCategory: '',
+    }
   }
   isCategorySelected(category) {
     return this.props.selectedCategory === category;
+  }
+  isCategoryHoveredOver(category) {
+    return this.state.hoveredCategory === category;
+  }
+  onHoverOnCategory(category, event) {
+    if(event.type === 'mouseout') {
+      this.setState({
+        hoveredCategory: ''
+      })
+    }
+    else if(event.type === 'mouseover') {
+      this.setState({
+        hoveredCategory: category
+      })
+    }
   }
   renderButtonList() {
     const categoryListInIndo = ['pendidikan', 'demografi', 'agama',
@@ -105,8 +126,10 @@ class CategoryBar extends React.Component {
         <Button 
           onButtonClick={this.props.onSelectCategory
                                    .bind(this, category)}
+          onHover={this.onHoverOnCategory.bind(this, category)}
           key={index}
           isSelected={this.isCategorySelected(category)}
+          isHoveredOver={this.isCategoryHoveredOver(category)}
           text={categoryInIndo[0].toUpperCase() + 
                 categoryInIndo.substr(1)} />
       )
@@ -119,6 +142,10 @@ class CategoryBar extends React.Component {
       </div>
     )
   } 
+}
+
+CategoryBar.propTypes = {
+  hoveredCategory: React.PropTypes.string
 }
 
 module.exports = Main;
