@@ -53,34 +53,23 @@ class Graphic extends React.Component {
       shouldRedraw: false
     }
   }
-  componentWillReceiveProps(newProps) {
-    this.setState({
-      shouldRedraw: this.props.dataFields.values === 
-                    newProps.dataFields.values.length ? false : true
+  componentWillReceiveProps(nextProps) {
+    console.log(this.props.chartName);
+    console.log(this.props.dataFields);
+    console.log(nextProps.dataFields);
+    console.log(this.props.dataFields.values.length === 
+                nextProps.dataFields.values.length ? false : true);
 
+    this.setState({
+      shouldRedraw: this.props.dataFields.values.length === 
+                    nextProps.dataFields.values.length ? false : true
     })
   }
-  renderChart() {
-    if(this.props.chartType === 'bar') {
-      return (
-        <TestBarChart dataFields={this.props.dataFields}
-                      dataOptions={this.props.dataOptions} 
-                      maxBarWidth={this.maxBarWidth}
-                      shouldRedraw={this.state.shouldRedraw}/>
-      )
-      {/*return (
-        <BarChart dataFields={this.props.dataFields}
-                  dataOptions={this.props.dataOptions} 
-                  maxBarWidth={this.maxBarWidth}
-                  shouldRedraw={this.state.shouldRedraw}/>
-      )*/}
-    }
-    else if(this.props.chartType === 'doughnut') {
-      return (
-        <DoughnutChart dataFields={this.props.dataFields} 
-                       dataOptions={this.props.dataOptions}
-                       shouldRedraw={this.state.shouldRedraw}/>
-      )
+  componentDidUpdate(prevProps, prevState) {
+    if(prevState.shouldRedraw == true) {
+      this.setState({
+        shouldRedraw: false
+      })      
     }
   }
   onUpdateDimensions(dimensions) {
@@ -91,8 +80,7 @@ class Graphic extends React.Component {
   }
   getDimensions() {
     let divStyle = {};
-    {/*const windowWidth = $(window).width();*/}
-    const windowWidth = 1300;
+    const windowWidth = $(window).width();
     const numValues = this.props.dataFields.values.length;
 
     if(this.props.chartType === 'bar') {
@@ -128,10 +116,27 @@ class Graphic extends React.Component {
         Math.round((numValues * (avgLabelLength + 50)) / componentWidth);
       const height = 300 + (numLegendLines * 20);
 
-      divStyle.height =  height + 'px'; 
+      divStyle.height = height + 'px'; 
     }
 
     return divStyle;
+  }
+  renderChart() {
+    if(this.props.chartType === 'bar') {
+      return (
+        <BarChart dataFields={this.props.dataFields}
+                  dataOptions={this.props.dataOptions} 
+                  maxBarWidth={this.maxBarWidth}
+                  shouldRedraw={this.state.shouldRedraw}/>
+      )
+    }
+    else if(this.props.chartType === 'doughnut') {
+      return (
+        <DoughnutChart dataFields={this.props.dataFields} 
+                       dataOptions={this.props.dataOptions}
+                       shouldRedraw={this.state.shouldRedraw}/>
+      )
+    }
   }
   render () {
 
@@ -150,7 +155,7 @@ class Graphic extends React.Component {
 Graphic.propTypes = {
   width: React.PropTypes.number,
   height: React.PropTypes.number,
-  shouldRedraw: React.PropTypes.bool,
+  shouldRedraw: React.PropTypes.bool
 }
 
 {/* Props 
