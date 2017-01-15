@@ -7,7 +7,7 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    chart_list = create_education_chart(['koja', 'tebet'], 'region')
+    chart_list = create_marriage_chart(['koja', 'tebet'], 'region')
 
 # Props 
 #     chartType (string)
@@ -212,31 +212,72 @@ def create_marriage_chart(region_list, comparison):
     chart_list: list of charts i.e objects to display          
     """
     if comparison == 'field':
-        qty_chart = create_chart_by_field_qty(region_list, 'marriage')
-        chart_total = get_chart_total(qty_chart, 'field')
-        pct_chart = create_chart_by_field_pct(qty_chart, chart_total)
+        qty_data = create_data_by_field_qty(region_list, 'marriage')
+        qty_chart = {
+            'chartType': 'bar',
+            'chartName': 'Status Pernikahan menurut Jumlah Orang',
+            'dataFields': qty_data,
+            'dataOptions': {
+                'fieldAxis': 'Status Pernikahan',
+                'measureAxis': 'Jumlah Orang',
+                'tooltipStringFormat': ['_', ' ', 'Orang']
+            }
+        }
 
-        qty_chart['xtitle'] = 'Status Pernikahan'
-        qty_chart['ytitle'] = 'Jumlah Orang'
-        pct_chart['xtitle'] = 'Tingkat Pendidikan'
-        pct_chart['ytitle'] = 'Persentase Orang'
-        chart_list = {'chart_list': [qty_chart, pct_chart]}
+        dataset_total = sum(qty_data['values'])
+        pct_data = create_data_by_field_pct(qty_data, dataset_total)
+        pct_chart = {
+            'chartType': 'doughnut',
+            'chartName': 'Status Pernikahan menurut Persentase Orang',
+            'dataFields': pct_data,
+            'dataOptions': {
+                'fieldAxis': 'Status Pernikahan',
+                'measureAxis': 'Persentase Orang',
+                'tooltipStringFormat': ['_', '%']
+            }
+        }
 
+        chart_list = {'chartList': [qty_chart, pct_chart]}
         jsonprint(chart_list)
         return chart_list
 
     elif comparison == 'region':
-        qty_list = create_chart_by_region_qty(region_list, 'marriage')
-        chart_total = get_chart_total(qty_list, 'region')
-        pct_list = create_chart_by_region_pct(qty_list, chart_total)
+        qty_list = create_data_by_region_qty(region_list, 'marriage')
+        dataset_total_list = get_dataset_total_list(qty_list)
+        pct_list = create_data_by_region_pct(qty_list,
+                                             dataset_total_list)
 
+        chart_list = {'chartList': []}
         for index, chart in enumerate(qty_list):
-            qty_list[index]['xtitle'] = 'Kecamatan'
-            qty_list[index]['ytitle'] = 'Jumlah Orang'
-            pct_list[index]['xtitle'] = 'Kecamatan'
-            pct_list[index]['ytitle'] = 'Persentase Orang'
+            pct_list[index]['dataOptions'] = {
+                'tooltipStringFormat': ['_', '%'],
+                'fieldAxis': 'Status Pernikahan',
+                'measureAxis': 'Persentase Orang'
+            }        
+            qty_list[index]['dataOptions'] = {
+                'tooltipStringFormat': ['_', ' ', 'Orang'],
+                'fieldAxis': 'Status Pernikahan',
+                'measureAxis': 'Jumlah Orang'
+            }
 
-        chart_list = {'chart_list': qty_list + pct_list}
+            field = pct_list[index]['chartName']
+            if field == 'Kawin':
+                pct_list[index]['chartName'] = \
+                    'Persentase Warga yang sudah ' + field + \
+                    ' menurut Kecamatan'
+                qty_list[index]['chartName'] = \
+                    'Jumlah Warga yang sudah ' + field + \
+                    ' menurut Kecamatan'
+            else:
+                pct_list[index]['chartName'] = \
+                    'Persentase Warga yang ' + field + \
+                    ' menurut Kecamatan'
+                qty_list[index]['chartName'] = \
+                    'Jumlah Warga yang ' + field + \
+                    ' menurut Kecamatan'                
+
+            chart_list['chartList'].append(pct_list[index])
+            chart_list['chartList'].append(qty_list[index])
 
         jsonprint(chart_list)
         return chart_list     
