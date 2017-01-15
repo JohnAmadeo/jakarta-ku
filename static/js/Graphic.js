@@ -91,7 +91,7 @@ class Graphic extends React.Component {
       }
       else {
         divStyle.height = this.maxBarHeight + 'px';
-        const widthPct = (numValues * this.maxBarWidth + 127) / 
+        const widthPct = (numValues * this.maxBarWidth + 160) / 
                          windowWidth * 100;
         divStyle.width = widthPct > 100 ? '100%' : (widthPct + '%');
       }
@@ -180,78 +180,6 @@ Graphic.propTypes = {
       adjust chart size; false otherwise
 */}
 
-class TestBarChart extends React.Component {
-  constructor(props) {
-    super(props);
-    this.getChartData = this.getChartData.bind(this);
-    this.getChartOptions = this.getChartOptions.bind(this);
-  }
-  getChartData() {
-    const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
-    const barData = {
-        labels: this.props.dataFields.labels,
-        datasets: [
-            {
-                backgroundColor: palette.background,
-                borderColor: palette.border,
-                borderWidth: 1,
-                data: this.props.dataFields.values
-            }
-        ]
-    };
-    return barData;
-  }
-  getChartOptions() {
-    const tooltipStringFormat = this.props.dataOptions.tooltipStringFormat;
-    const barOptions = {
-      maintainAspectRatio: false,
-      responsive: true,
-      legend: {
-        display: false
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            min: 0,
-            callback: ((label) => label),
-            fontSize: 12
-          },
-          scaleLabel: {
-            display: true,
-            labelString: this.props.dataOptions.measureAxis
-          }
-        }],
-        xAxes: [{
-          ticks: {
-            min: 0,
-            fontSize: 12
-          },
-          scaleLabel: {
-            display: true,
-            labelString: this.props.dataOptions.fieldAxis 
-          }
-        }]
-      },
-      tooltips: {
-        callbacks: {
-          label: ((label) => label),
-          title: ((title) => title)
-        }
-      }
-    };
-    return barOptions;
-  }
-  render() {
-    return (
-      <div className='TestBarChart' style={{width: '100%', height: '100%'}}>
-        <Bar data={this.getChartData()} 
-             options={this.getChartOptions()} 
-             redraw={this.props.shouldRedraw}/>
-      </div>
-    )
-  }
-}
-
 class BarChart extends React.Component {
   constructor(props) {
     super(props);
@@ -318,7 +246,7 @@ class BarChart extends React.Component {
       tooltips: {
         callbacks: {
           label: this.getTooltipLabel,
-          title: this.getTooltipTitle
+          title: this.getTooltipTitle 
         }
       }
     };
