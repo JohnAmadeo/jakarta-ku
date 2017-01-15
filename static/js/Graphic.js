@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import Utils from './utils';
+import Numeral from 'numeral';
 
 import {HorizontalBar, Bar, Doughnut} from 'react-chartjs-2';
 import Measure from 'react-measure';
@@ -42,6 +43,7 @@ class Graphic extends React.Component {
     this.renderChart = this.renderChart.bind(this);
     this.onUpdateDimensions = this.onUpdateDimensions.bind(this);
     this.getDimensions = this.getDimensions.bind(this);
+    this.getNumberFormat = this.getNumberFormat.bind(this);
 
     this.maxBarWidth = 130;
     this.maxBarHeight = 450;
@@ -77,6 +79,29 @@ class Graphic extends React.Component {
       width: dimensions.width,
       height: dimensions.height
     })
+  }
+  getNumberFormat(label) {
+    const value = Number(label);
+    
+    if(value > 7 && value < 8) {
+      console.log('----------');
+      console.log(value);
+      console.log(value.toFixed(0) - value.toFixed(2));
+      console.log(value.toFixed(2));
+    }
+
+    if(value % 1 === 0) {
+      console.log('hi');
+      return Numeral(label).format('0,0');
+    }
+    else if((value >= 1) && (value.toFixed(0) - value.toFixed(2) === 0)) {
+      console.log('ho');
+      return Numeral(label).format('0,0');
+    }
+    else {
+      console.log('hey');
+      return Numeral(label).format('0.0[0000]');      
+    }
   }
   getDimensions() {
     let divStyle = {};
@@ -127,14 +152,16 @@ class Graphic extends React.Component {
         <BarChart dataFields={this.props.dataFields}
                   dataOptions={this.props.dataOptions} 
                   maxBarWidth={this.maxBarWidth}
-                  shouldRedraw={this.state.shouldRedraw}/>
+                  shouldRedraw={this.state.shouldRedraw}
+                  getNumberFormat={this.getNumberFormat}/>
       )
     }
     else if(this.props.chartType === 'doughnut') {
       return (
         <DoughnutChart dataFields={this.props.dataFields} 
                        dataOptions={this.props.dataOptions}
-                       shouldRedraw={this.state.shouldRedraw}/>
+                       shouldRedraw={this.state.shouldRedraw}
+                       getNumberFormat={this.getNumberFormat}/>
       )
     }
   }
@@ -275,18 +302,19 @@ class BarChart extends React.Component {
     else return label;
   }
   getMeasureTickLabel(label) {
-    // return Number(label).toFixed(2);
-    const num = Number(label);
-    return parseInt(num) === num ? num : num.toFixed(1);
+    return this.props.getNumberFormat(label);
   }
   getTooltipTitle(item) {
     return this.props.dataFields.labels[item[0].index];
   }
   getTooltipLabel(item) {
+    const value = this.props.getNumberFormat(this.props.dataFields
+                                                 .values[item.index]);
+
     const stringFormat = this.props.dataOptions.tooltipStringFormat;
     return stringFormat.reduce((sentence, phrase) => {
       if(phrase === '_') {
-        return sentence + this.props.dataFields.values[item.index];
+        return sentence + value;
       }
       else return sentence + phrase + ' ';
     }, '');
@@ -346,10 +374,13 @@ class DoughnutChart extends React.Component {
     return pieOptions;
   }
   getTooltipLabel(item) {
+    const value = this.props.getNumberFormat(this.props.dataFields
+                                                 .values[item.index]);
+
     const stringFormat = this.props.dataOptions.tooltipStringFormat;
     return stringFormat.reduce((sentence, phrase) => {
       if(phrase === '_') {
-        return sentence + this.props.dataFields.values[item.index];
+        return sentence + value;
       }
       else return sentence + phrase + ' ';
     }, '');
