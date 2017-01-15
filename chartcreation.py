@@ -7,53 +7,135 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    chart_list = create_demographics_chart(['koja', 'tebet'], 'region')
+    chart_list = create_religion_chart(['koja', 'tebet'], 'region')
+
+# Props 
+#     chartType (string)
+#     'bar' or 'doughnut'
+#     chartName (string)
+#     'Tingkat Pendidikan antar Kecamatan'
+#     dataFields (object)
+#     {
+#       values: [1,2,3],
+#       labels: ['a','b','c']
+#     }
+
+#     dataOptions (object)
+#     {
+#       fieldAxis: 'Pekerjaan'
+#       measureAxis: 'Jumlah Orang'
+#       tooltipStringFormat: //func?
+#     }
 
 def create_chart_list(comparison, region_list, category):
-    global DATABASE
+    """
+    Create a list of charts to display 
+
+    Args
+    comparison: compare data in the category by field or by region
+    region_list: list of regions whose data will be examined
+    category: category of the dataset examined
+
+    Returns
+    chart_list: list of charts i.e objects to display         
+    """
     if category == 'education':
-        create_education_chart(region_list, comparison)
+        return create_education_chart(region_list, comparison)
     elif category == 'occupation':
-        create_occupation_chart(region_list, comparison)
+        return create_occupation_chart(region_list, comparison)
     elif category == 'marriage':
-        create_marriage_chart(region_list, comparison)
+        return create_marriage_chart(region_list, comparison)
     elif category == 'religion':
-        create_religion_chart(region_list, comparison)
+        return create_religion_chart(region_list, comparison)
     elif category == 'demographics':
-        create_demographics_chart(region_list, comparison)
+        return create_demographics_chart(region_list, comparison)
 
 def create_religion_chart(region_list, comparison):
+    """
+    Create list of charts to display data from the religion category 
+
+    Args
+    region_list: list of regions whose data will be examined
+    comparison: compare data in the category by field or by region
+
+    Returns
+    chart_list: list of charts i.e objects to display          
+    """
     if comparison == 'field':
-        qty_chart = create_chart_by_field_qty(region_list, 'religion')
-        chart_total = get_chart_total(qty_chart, 'field')
-        pct_chart = create_chart_by_field_pct(qty_chart, chart_total)
+        qty_data = create_data_by_field_qty(region_list, 'religion')
+        qty_chart = {
+            'chartType': 'bar',
+            'chartName': 'Agama menurut Jumlah Penganut',
+            'dataFields': qty_data,
+            'dataOptions': {
+                'fieldAxis': 'Agama',
+                'measureAxis': 'Jumlah Orang',
+                'tooltipStringFormat': ['_', ' ', 'Orang']
+            }
+        }
 
-        qty_chart['xtitle'] = 'Agama'
-        qty_chart['ytitle'] = 'Jumlah Orang'
-        pct_chart['xtitle'] = 'Agama'
-        pct_chart['ytitle'] = 'Persentase Orang'
-        chart_list = {'chart_list': [qty_chart, pct_chart]}
+        dataset_total = sum(qty_data['values'])
+        pct_data = create_data_by_field_pct(qty_data, dataset_total)
+        pct_chart = {
+            'chartType': 'doughnut',
+            'chartName': 'Agama menurut Persentase Penganut',
+            'dataFields': pct_data,
+            'dataOptions': {
+                'fieldAxis': 'Agama',
+                'measureAxis': 'Persentase Orang',
+                'tooltipStringFormat': ['_', '%']
+            }
+        }
 
+        chart_list = {'chartList': [qty_chart, pct_chart]}
         jsonprint(chart_list)
         return chart_list
 
     elif comparison == 'region':
-        qty_list = create_chart_by_region_qty(region_list, 'religion')
-        chart_total = get_chart_total(qty_list, 'region')
-        pct_list = create_chart_by_region_pct(qty_list, chart_total)
+        qty_list = create_data_by_region_qty(region_list, 'religion')
 
+        dataset_total_list = get_dataset_total_list(qty_list)
+        jsonprint(dataset_total_list)
+
+        pct_list = create_data_by_region_pct(qty_list, 
+                                             dataset_total_list)
+
+        chart_list = {'chartList': []}
         for index, chart in enumerate(qty_list):
-            qty_list[index]['xtitle'] = 'Kecamatan'
-            qty_list[index]['ytitle'] = 'Jumlah Orang'
-            pct_list[index]['xtitle'] = 'Kecamatan'
-            pct_list[index]['ytitle'] = 'Persentase Orang'
+            pct_list[index]['dataOptions'] = {
+                'tooltipStringFormat': ['_', '%']
+            }
+            qty_list[index]['dataOptions'] = {
+                'tooltipStringFormat': ['_', ' ', 'Orang'],
+                'fieldAxis': 'Agama',
+                'measureAxis': 'Jumlah Orang'
+            }
 
-        chart_list = {'chart_list': qty_list + pct_list}
+            field = pct_list[index]['chartName']
+            pct_list[index]['chartName'] = \
+                'Persentase Orang Penganut Agama ' + field + \
+                ' menurut Kecamatan'
+            qty_list[index]['chartName'] = \
+                'Jumlah Orang Penganut Agama ' + field + \
+                ' menurut Kecamatan'
+
+            chart_list['chartList'].append(pct_list[index])
+            chart_list['chartList'].append(qty_list[index])
 
         jsonprint(chart_list)
         return chart_list
 
 def create_education_chart(region_list, comparison):
+    """
+    Create list of charts to display data from the education category 
+
+    Args
+    region_list: list of regions whose data will be examined
+    comparison: compare data in the category by field or by region
+
+    Returns
+    chart_list: list of charts i.e objects to display          
+    """
     if comparison == 'field':
         qty_chart = create_chart_by_field_qty(region_list, 'education')
         chart_total = get_chart_total(qty_chart, 'field')
@@ -85,6 +167,16 @@ def create_education_chart(region_list, comparison):
         return chart_list       
 
 def create_marriage_chart(region_list, comparison):
+    """
+    Create list of charts to display data from the marriage category 
+
+    Args
+    region_list: list of regions whose data will be examined
+    comparison: compare data in the category by field or by region
+
+    Returns
+    chart_list: list of charts i.e objects to display          
+    """
     if comparison == 'field':
         qty_chart = create_chart_by_field_qty(region_list, 'marriage')
         chart_total = get_chart_total(qty_chart, 'field')
@@ -116,6 +208,16 @@ def create_marriage_chart(region_list, comparison):
         return chart_list     
 
 def create_occupation_chart(region_list, comparison):
+    """
+    Create list of charts to display data from the occupation category 
+
+    Args
+    region_list: list of regions whose data will be examined
+    comparison: compare data in the category by field or by region
+
+    Returns
+    chart_list: list of charts i.e objects to display          
+    """
     if comparison == 'field':
         qty_chart = create_chart_by_field_qty(region_list, 'occupation')
         
@@ -155,6 +257,16 @@ def create_occupation_chart(region_list, comparison):
         return chart_list  
 
 def create_demographics_chart(region_list, comparison):
+    """
+    Create list of charts to display data from the demographics category 
+
+    Args
+    region_list: list of regions whose data will be examined
+    comparison: compare data in the category by field or by region
+
+    Returns
+    chart_list: list of charts i.e objects to display          
+    """
     if comparison == 'field':
         qty_chart = create_chart_by_field_qty(region_list, 'demographics')
         qty_chart['data'] = qty_chart['data'][2:]
@@ -197,7 +309,15 @@ def create_demographics_chart(region_list, comparison):
         jsonprint(chart_list)
         return chart_list       
 
-def create_chart_by_field_qty(region_list, category):
+def create_data_by_field_qty(region_list, category):
+    """
+    Args
+    region_list: list of regions whose data will be examined
+    category: category of the dataset
+
+    Returns
+    chart: a chart displaying 
+    """
     global DATABASE
     collection = DATABASE.get_collection(category)
 
@@ -230,25 +350,23 @@ def create_chart_by_field_qty(region_list, category):
                 for key in list(document.keys())]
         data = sorted(data, key=lambda x: x[2])
     
-    chart = {
-        'label': 'quantity',
-        'data': [[data_unit[0], data_unit[1]] for data_unit in data],
-        'chart_type': 'bar'
-    }           
-
-    return chart
-
-def create_chart_by_field_pct(chart, chart_total):
-    data = [[data_unit[0], round_num(data_unit[1], chart_total)] 
-            for data_unit in chart['data']]
-    chart = {
-        'label': 'percentage', 
-        'data': data,
-        'chart_type': 'pie'
+    data_fields = {
+        'labels': [data_unit[0] for data_unit in data],
+        'values': [data_unit[1] for data_unit in data],
     }
-    return chart
 
-def create_chart_by_region_qty(region_list, category):
+    return data_fields
+
+def create_data_by_field_pct(data, dataset_total):
+    data_fields = {
+        'labels': data['labels'],
+        'values': [100 * round_num(value, dataset_total) 
+                   for value in data['values']]
+    }
+
+    return data_fields
+
+def create_data_by_region_qty(region_list, category):
     global DATABASE
     collection = DATABASE.get_collection(category)
     qty_list = []
@@ -281,55 +399,63 @@ def create_chart_by_region_qty(region_list, category):
         ])  
 
         data = None
-        for result in cursor:
-            data = result
+        for document in cursor:
+            data = [[key, document[key]]
+                    for key in sorted(list(document.keys()))]
 
         qty_list.append({
-            'label': field,
-            'data': [[key, data[key]] for key in list(data.keys())],
-            'display_order': get_field_display_order(field),
-            'chart_type': 'bar' 
+            'chartType': 'bar',
+            'chartName': field,
+            'dataFields': {
+                'values': [data_unit[1] for data_unit in data],
+                'labels': [capitalize(data_unit[0]) 
+                           for data_unit in data]
+            }  
         })
 
     qty_list = sorted(qty_list, 
-                           key=lambda chart: chart['display_order'])
-    for chart in qty_list:
-        chart.pop('display_order')
+               key=lambda x: get_field_display_order(x['chartName']))
 
     return qty_list
 
-def create_chart_by_region_pct(chart_list, chart_total):
+def create_data_by_region_pct(chart_list, dataset_total_list):
     pct_list = []
     for chart in chart_list:
+        value_list = chart['dataFields']['values']
+        region_list = chart['dataFields']['labels']
+        pct_value_list = []
+        for index, value in enumerate(value_list):
+            total = dataset_total_list[region_list[index]]
+            pct_value_list.append(100 * round_num(value, total))
+
         pct_list.append({
-            'label': chart['label'],
-            'data': [[data_unit[0], 
-                      round_num(data_unit[1], chart_total[data_unit[0]])]
-                     for data_unit in chart['data']],
-            'chart_type': 'bar'    
+            'chartType': 'doughnut',
+            'chartName': chart['chartName'],
+            'dataFields': {
+                'values': pct_value_list,
+                'labels': chart['dataFields']['labels']
+            }  
         })
 
     return pct_list
 
-
-def get_chart_total(chart_obj, comparison):
+def get_dataset_total_list(chart_list):
     """
-    If 'region' comparison, list of charts is passed in
-    If 'field' comparison, chart is passed in
+    Get a list of the total number of people in the dataset
+    for each region
     """
-    if comparison == 'field':
-        chart = chart_obj
-        return sum([data_unit[1] for data_unit in chart['data']])
-    elif comparison == 'region':
-        population_dict = {}
-        for chart in chart_obj:
-            for data_unit in chart['data']:
-                if data_unit[0] in population_dict.keys():
-                    population_dict[data_unit[0]] += data_unit[1]
-                else:
-                    population_dict[data_unit[0]] = data_unit[1]
+    dataset_total_list = dict()
+    for chart in chart_list:
+        region_list = chart['dataFields']['labels']
+        value_list = chart['dataFields']['values']
 
-        return population_dict
+        for index, region in enumerate(region_list):
+            try:
+                dataset_total_list[region] += value_list[index]
+            except KeyError:
+                dataset_total_list[region] = value_list[index]
+
+    return(dataset_total_list)
 
 def round_num(num, total):
     if num == 0: return 0
@@ -355,6 +481,10 @@ def jsonprint(obj):
         obj_copy = obj.copy()
         del obj_copy['_id']
         print(json.dumps(obj_copy, sort_keys=True, indent=4))
+
+def capitalize(name):
+    return ''.join([(word[0].upper() + word[1:] + ' ') 
+                    for word in name.split(' ')])[:-1]
 
 if __name__ == "__main__":
     main()
