@@ -7,7 +7,7 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    chart_list = create_occupation_chart(['koja', 'tebet'], 'region')
+    chart_list = create_demographics_chart(['koja', 'tebet'], 'region')
 
 # Props 
 #     chartType (string)
@@ -403,46 +403,173 @@ def create_demographics_chart(region_list, comparison):
     chart_list: list of charts i.e objects to display          
     """
     if comparison == 'field':
-        qty_chart = create_chart_by_field_qty(region_list, 'demographics')
-        qty_chart['data'] = qty_chart['data'][2:]
-        chart_total = get_chart_total(qty_chart, 'field')
-        pct_chart = create_chart_by_field_pct(qty_chart, chart_total)
+      data = create_data_by_field_qty(region_list, 'demographics')
 
-        qty_chart['xtitle'] = 'Demografi'
-        qty_chart['ytitle'] = 'Jumlah Orang'
-        pct_chart['xtitle'] = 'Agama'
-        pct_chart['ytitle'] = 'Persentase Orang'
-        chart_list = {'chart_list': [qty_chart, pct_chart]}
+      age_labels = [(data['labels'][index].split(' ')[0] + ' Tahun') 
+                    for index in range(0, len(data['labels']),2)]
+      age_values = [(data['values'][index]+data['values'][index+1]) 
+                    for index in range(0, len(data['values']),2)]
+      dataset_total = sum(age_values)
+
+      qty_age_chart1 = {
+          'chartType': 'bar',
+          'chartName': 'Jumlah Orang berdasarkan Umur: 0-49 Tahun',
+          'dataFields': {
+              'labels': age_labels[:10],
+              'values': age_values[:10]
+          },
+          'dataOptions': {
+              'fieldAxis': 'Kategori Demografi',
+              'measureAxis': 'Jumlah Orang',
+              'tooltipStringFormat': ['_', ' Orang']
+          }
+      }   
+
+      qty_age_chart2 = {
+          'chartType': 'bar',
+          'chartName': 'Jumlah Orang berdasarkan Umur: 50-75< Tahun',
+          'dataFields': {
+              'labels': age_labels[10:],
+              'values': age_values[10:]
+          },
+          'dataOptions': {
+              'fieldAxis': 'Kategori Demografi',
+              'measureAxis': 'Jumlah Orang',
+              'tooltipStringFormat': ['_', ' Orang']
+          }
+      }              
+
+      pct_age_chart = {
+          'chartType': 'doughnut',
+          'chartName': 'Persentase Orang berdasarkan Umur',
+          'dataFields': {
+              'labels': age_labels,
+              'values': [100 * (value/dataset_total) 
+                          for value in age_values]
+          },
+          'dataOptions': {
+              'tooltipStringFormat': ['_', '%']
+          }
+      }
+
+      qty_demo_chart1 = {
+          'chartType': 'bar',
+          'chartName': 'Jumlah Orang berdasarkan Umur dan Kelamin: 0-24 Tahun',
+          'dataFields': {
+              'labels': data['labels'][:10],
+              'values': data['values'][:10]
+          },
+          'dataOptions': {
+              'fieldAxis': 'Kategori Demografi',
+              'measureAxis': 'Jumlah Orang',
+              'tooltipStringFormat': ['_', ' Orang']
+          }
+      }   
+
+      qty_demo_chart2 = {
+          'chartType': 'bar',
+          'chartName': 'Jumlah Orang berdasarkan Umur dan Kelamin: 25-49 Tahun',
+          'dataFields': {
+              'labels': data['labels'][10:20],
+              'values': data['values'][10:20]
+          },
+          'dataOptions': {
+              'fieldAxis': 'Kategori Demografi',
+              'measureAxis': 'Jumlah Orang',
+              'tooltipStringFormat': ['_', ' Orang']
+          }
+      }   
+
+      qty_demo_chart3 = {
+          'chartType': 'bar',
+          'chartName': 'Jumlah Orang berdasarkan Umur dan Kelamin: 50-75< Tahun',
+          'dataFields': {
+              'labels': data['labels'][20:],
+              'values': data['values'][20:]
+          },
+          'dataOptions': {
+              'fieldAxis': 'Kategori Demografi',
+              'measureAxis': 'Jumlah Orang',
+              'tooltipStringFormat': ['_', ' Orang']
+          }
+      }    
+
+      pct_demo_chart = {
+          'chartType': 'doughnut',
+          'chartName': 'Persentase Orang berdasarkan Umur dan Kelamin',
+          'dataFields': {
+              'labels': data['labels'],
+              'values': [100 * (value/dataset_total) 
+                          for value in data['values']]
+          },
+          'dataOptions': {
+              'tooltipStringFormat': ['_', '%']
+          }
+      }      
+
+      gender_values = [
+          sum([data['values'][index] 
+              for index in range(0, len(data['values']), 2)]),
+          sum([data['values'][index] 
+              for index in range(1, len(data['values']), 2)])
+      ]
+      gender_labels = ['Laki-Laki', 'Perempuan']
+      pct_gender_chart = {
+          'chartType': 'doughnut',
+          'chartName': 'Persentase Orang berdasarkan Kelamin',
+          'dataFields': {
+              'labels': gender_labels,
+              'values': [100 * (value / dataset_total)
+                         for value in gender_values]
+          },
+          'dataOptions': {
+              'tooltipStringFormat': ['_','%']
+          }
+      }
+
+      chart_list = {
+          'chartList': [
+              qty_age_chart1, qty_age_chart2, pct_age_chart,
+              qty_demo_chart1, qty_demo_chart2, qty_demo_chart3,
+              pct_demo_chart, pct_gender_chart
+          ]
+      }
+
+      jsonprint(chart_list)
+      return chart_list
+    elif comparison == 'region':
+        qty_list = create_data_by_region_qty(region_list, 'demographics')
+        dataset_total_list = get_dataset_total_list(qty_list)
+        pct_list = create_data_by_region_pct(qty_list, 
+                                             dataset_total_list)
+
+
+        chart_list = {'chartList': []}
+        for index, chart in enumerate(qty_list):
+            pct_list[index]['dataOptions'] = {
+                'tooltipStringFormat': ['_', '%'],
+                'fieldAxis': 'Umur dan Kelamin',
+                'measureAxis': 'Persentase Orang'
+            }
+            qty_list[index]['dataOptions'] = {
+                'tooltipStringFormat': ['_', ' ', 'Orang'],
+                'fieldAxis': 'Umur dan Kelamin',
+                'measureAxis': 'Jumlah Orang'
+            }
+
+            field = pct_list[index]['chartName']
+            pct_list[index]['chartName'] = \
+                "Persentase Orang dalam Kategori '" + field + \
+                "' menurut Kecamatan"
+            qty_list[index]['chartName'] = \
+                "Jumlah Orang dalam Kategori '" + field + \
+                "' menurut Kecamatan"
+
+            chart_list['chartList'].append(pct_list[index])
+            chart_list['chartList'].append(qty_list[index])
 
         jsonprint(chart_list)
         return chart_list
-    elif comparison == 'region':
-        qty_list = create_chart_by_region_qty(region_list, 'demographics')
-        
-        area_chart = qty_list[0]
-        density_chart = qty_list[1]
-        area_chart['xtitle'] = 'Kecamatan'
-        area_chart['ytitle'] = 'Km^2'
-        density_chart['xtitle'] = 'Kecamatan'
-        density_chart['ytitle'] = 'Orang/Km^2'
-
-
-        qty_list = qty_list[2:]
-        chart_total = get_chart_total(qty_list, 'region')
-        pct_list = create_chart_by_region_pct(qty_list, chart_total)
-
-        for index, chart in enumerate(qty_list):
-            qty_list[index]['xtitle'] = 'Kecamatan'
-            qty_list[index]['ytitle'] = 'Jumlah Orang'
-            pct_list[index]['xtitle'] = 'Kecamatan'
-            pct_list[index]['ytitle'] = 'Persentase Orang'
-
-        chart_list = {
-            'chart_list': [area_chart, density_chart] + qty_list + pct_list
-        }
-
-        jsonprint(chart_list)
-        return chart_list       
 
 def create_data_by_field_qty(region_list, category):
     """
