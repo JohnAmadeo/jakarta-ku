@@ -7,7 +7,7 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    chart_list = create_marriage_chart(['koja', 'tebet'], 'region')
+    chart_list = create_occupation_chart(['koja', 'tebet'], 'region')
 
 # Props 
 #     chartType (string)
@@ -294,42 +294,102 @@ def create_occupation_chart(region_list, comparison):
     chart_list: list of charts i.e objects to display          
     """
     if comparison == 'field':
-        qty_chart = create_chart_by_field_qty(region_list, 'occupation')
-        
-        top10_data = sorted(qty_chart['data'], 
-                            key=lambda x:x[1], reverse=True)[:10]
-        top10_chart = qty_chart.copy()
-        top10_chart['data'] = top10_data
+        qty_data = create_data_by_field_qty(region_list, 'occupation')
+        qty_data['labels'] = \
+            [label for label, value in 
+             sorted(zip(qty_data['labels'], qty_data['values']), 
+                    key=lambda x: x[1], reverse=True)]
+        qty_data['values'] = sorted(qty_data['values'], reverse=True)
 
-        bottom10_data = [data_unit for data_unit in qty_chart['data'] 
-                         if data_unit[1] != 0]
-        bottom10_data = sorted(bottom10_data,
-                               key=lambda x:x[1])[:10]
-        bottom10_chart = qty_chart.copy()
-        bottom10_chart['data'] = bottom10_data
-        bottom10_chart['warning'] = 'Pekerjaan yang dipegang oleh 0 orang di semua kecamatan yang terseleksi tidak akan ditampilkan'
+        top_ten_chart = {
+            'chartType': 'bar',
+            'chartName': '10 Pekerjaan dengan Jumlah Orang Paling Banyak',
+            'dataFields': {
+                'labels': qty_data['labels'][:10],
+                'values': qty_data['values'][:10]
+            },
+            'dataOptions': {
+                'fieldAxis': 'Pekerjaan',
+                'measureAxis': 'Jumlah Orang',
+                'tooltipStringFormat': ['_', ' ', 'Orang']
+            }
+        }
 
-        chart_list = {'chart_list': [top10_chart, bottom10_chart]}
+        num_jobs = len(qty_data['labels'])
+        bottom_ten_chart = {
+            'chartType': 'bar',
+            'chartName': '10 Pekerjaan dengan Jumlah Orang Paling Sedikit',
+            'dataFields': {
+                'labels': qty_data['labels'][num_jobs - 10:],
+                'values': qty_data['values'][num_jobs - 10:]
+            },
+            'dataOptions': {
+                'fieldAxis': 'Pekerjaan',
+                'measureAxis': 'Jumlah Orang',
+                'tooltipStringFormat': ['_', ' ', 'Orang']
+            }
+        }
+
+        chart_list = {'chartList': [top_ten_chart, bottom_ten_chart]}
+
+        for start in range(10, num_jobs - 10,10):
+            end = (start + 10) if start != 70 else (start + 5) 
+            chart_list['chartList'].append({
+                'chartType': 'bar',
+                'chartName': 'Pekerjaan berdasarkan Jumlah ' + \
+                             'Orang: #' + str(start) + \
+                             '-#' + str(end),
+                'dataFields': {
+                    'labels': qty_data['labels'][start:end],
+                    'values': qty_data['values'][start:end]                  
+                },
+                'dataOptions': {
+                    'fieldAxis': 'Pekerjaan',
+                    'measureAxis': 'Jumlah Orang',
+                    'tooltipStringFormat': ['_', ' ', 'Orang']
+                }                
+            })
 
         jsonprint(chart_list)
         return chart_list 
+
     elif comparison == 'region': 
-        qty_list = create_chart_by_region_qty(region_list, 'occupation')
-        chart_total = get_chart_total(qty_list, 'region')
+        qty_list = create_data_by_region_qty(region_list, 'occupation')
+
         for chart in qty_list[:]:
-            occupation_count_list = [data_unit[1] 
-                                     for data_unit in chart['data']]
-            if all_x(occupation_count_list, 0):
-                qty_list.remove(chart) 
+            if all_x(chart['dataFields']['values'], 0):
+                qty_list.remove(chart)
+            else:
+                chart['chartName'] = 'Jumlah Orang dengan ' + \
+                                     'pekerjaan ' + \
+                                     chart['chartName']
+                chart['dataOptions'] = {
+                    'tooltipStringFormat': ['_', ' ', 'Orang'],
+                    'fieldAxis': 'Kecamatan',
+                    'measureAxis': 'Jumlah Orang'
+                }
 
-        for index, chart in enumerate(qty_list):
-            qty_list[index]['xtitle'] = 'Kecamatan'
-            qty_list[index]['ytitle'] = 'Jumlah Orang'
-
-        chart_list = {'chart_list': qty_list}
-
+        chart_list = {'chartList': qty_list}
         jsonprint(chart_list)
-        return chart_list  
+        return chart_list
+
+
+        # qty_list = create_chart_by_region_qty(region_list, 'occupation')
+        # chart_total = get_chart_total(qty_list, 'region')
+        # for chart in qty_list[:]:
+        #     occupation_count_list = [data_unit[1] 
+        #                              for data_unit in chart['data']]
+        #     if all_x(occupation_count_list, 0):
+        #         qty_list.remove(chart) 
+
+        # for index, chart in enumerate(qty_list):
+        #     qty_list[index]['xtitle'] = 'Kecamatan'
+        #     qty_list[index]['ytitle'] = 'Jumlah Orang'
+
+        # chart_list = {'chart_list': qty_list}
+
+        # jsonprint(chart_list)
+        # return chart_list  
 
 def create_demographics_chart(region_list, comparison):
     """
