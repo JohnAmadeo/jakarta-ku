@@ -218,7 +218,7 @@ class BarChart extends React.Component {
     this.getMeasureTickLabel = this.getMeasureTickLabel.bind(this);
   }
   getChartData() {
-    const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
+    const palette = Utils.getColorPalette(this.props.dataFields.values.length);
     const barData = {
         labels: this.props.dataFields.labels,
         datasets: [
@@ -343,9 +343,10 @@ class DoughnutChart extends React.Component {
     this.getChartData = this.getChartData.bind(this);
     this.getChartOptions = this.getChartOptions.bind(this);
     this.getTooltipLabel = this.getTooltipLabel.bind(this);
+    this.getTooltipTitle = this.getTooltipTitle.bind(this);
   }
   getChartData() {
-    const palette = Utils.getColorPalette(this.props.dataFields.labels.length);
+    const palette = Utils.getColorPalette(this.props.dataFields.values.length);
     var pieData = {
         labels: this.props.dataFields.labels,
         datasets: [
@@ -367,11 +368,15 @@ class DoughnutChart extends React.Component {
       },
       tooltips: {
         callbacks: {
-          label: this.getTooltipLabel
+          label: this.getTooltipLabel,
+          title: this.getTooltipTitle
         }
       }
     };
     return pieOptions;
+  }
+  getTooltipTitle(item) {
+    return this.props.dataFields.labels[item[0].index];
   }
   getTooltipLabel(item) {
     const value = this.props.getNumberFormat(this.props.dataFields
