@@ -492,20 +492,7 @@ def create_demographics_chart(region_list, comparison):
               'measureAxis': 'Jumlah Orang',
               'tooltipStringFormat': ['_', ' Orang']
           }
-      }    
-
-      pct_demo_chart = {
-          'chartType': 'doughnut',
-          'chartName': 'Persentase Orang berdasarkan Umur dan Kelamin',
-          'dataFields': {
-              'labels': data['labels'],
-              'values': [100 * (value/dataset_total) 
-                          for value in data['values']]
-          },
-          'dataOptions': {
-              'tooltipStringFormat': ['_', '%']
-          }
-      }      
+      }       
 
       gender_values = [
           sum([data['values'][index] 
