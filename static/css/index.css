@@ -192,11 +192,25 @@ body {
   margin: 5px 5px 5px 0px;
 }
 
+/* LabelBar */
+
+#app .LabelBar {
+  margin-top: 10px;
+}
+
+#app .LabelBar .btn {
+  font-size: 14px;
+  padding: 5px 15px;
+  text-align: left;
+  border-radius: 15px;
+  margin: 5px 5px 0px 0px;  
+}
+
 /* Graphic */
 #app .Graphic {
   padding: 10px;
   margin: 0 0 100px 0;
-  /*border: 1px solid #FF8383;*/
+  border: 1px solid #FF8383;
   display: inline-block;
 }
 
@@ -225,4 +239,5 @@ body {
 #app .BarChart {
   padding: 10px;
 }
+
 

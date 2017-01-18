@@ -6,18 +6,6 @@ import Numeral from 'numeral';
 import {HorizontalBar, Bar, Doughnut} from 'react-chartjs-2';
 import Measure from 'react-measure';
 
-
-{/*
-  Abstraction Specifications
-  - AdaptiveDoughnut Specifications
-      - Modify chart width/height ratio at multiple breakpoints to
-        prevent chart from being too big
-      - Above col-lg breakpoint, make size col-lg-6
-  - Color Specifications
-    - Strong border colors, and faded inner colors
-    - Inner color becomes border colors on hover
-*/}
-
 {/* Props 
     chartType (string)
     'bar' or 'doughnut'
@@ -56,12 +44,6 @@ class Graphic extends React.Component {
     }
   }
   componentWillReceiveProps(nextProps) {
-    console.log(this.props.chartName);
-    console.log(this.props.dataFields);
-    console.log(nextProps.dataFields);
-    console.log(this.props.dataFields.values.length === 
-                nextProps.dataFields.values.length ? false : true);
-
     this.setState({
       shouldRedraw: this.props.dataFields.values.length === 
                     nextProps.dataFields.values.length ? false : true
@@ -82,24 +64,14 @@ class Graphic extends React.Component {
   }
   getNumberFormat(label) {
     const value = Number(label);
-    
-    if(value > 7 && value < 8) {
-      console.log('----------');
-      console.log(value);
-      console.log(value.toFixed(0) - value.toFixed(2));
-      console.log(value.toFixed(2));
-    }
 
     if(value % 1 === 0) {
-      console.log('hi');
       return Numeral(label).format('0,0');
     }
     else if((value >= 1) && (value.toFixed(0) - value.toFixed(2) === 0)) {
-      console.log('ho');
       return Numeral(label).format('0,0');
     }
     else {
-      console.log('hey');
       return Numeral(label).format('0.0[0000]');      
     }
   }

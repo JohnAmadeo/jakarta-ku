@@ -112,7 +112,7 @@ def create_religion_chart(region_list, comparison):
                 'measureAxis': 'Jumlah Orang'
             }
 
-            field = pct_list[index]['chartName']
+            field = pct_list[index]['field']
             pct_list[index]['chartName'] = \
                 'Persentase Orang Penganut Agama ' + field + \
                 ' menurut Kecamatan'
@@ -188,7 +188,7 @@ def create_education_chart(region_list, comparison):
                 'measureAxis': 'Jumlah Orang'
             }
 
-            field = pct_list[index]['chartName']
+            field = pct_list[index]['field']
             pct_list[index]['chartName'] = \
                 "Persentase Orang dengan Status Pendidikan '" + field + \
                 "' menurut Kecamatan"
@@ -263,7 +263,7 @@ def create_marriage_chart(region_list, comparison):
                 'measureAxis': 'Jumlah Orang'
             }
 
-            field = pct_list[index]['chartName']
+            field = pct_list[index]['field']
             if field == 'Kawin':
                 pct_list[index]['chartName'] = \
                     'Persentase Warga yang sudah ' + field + \
@@ -366,7 +366,7 @@ def create_occupation_chart(region_list, comparison):
             else:
                 chart['chartName'] = 'Jumlah Orang dengan ' + \
                                      'pekerjaan ' + \
-                                     chart['chartName']
+                                     chart['field']
                 chart['dataOptions'] = {
                     'tooltipStringFormat': ['_', ' ', 'Orang'],
                     'fieldAxis': 'Kecamatan',
@@ -530,7 +530,7 @@ def create_demographics_chart(region_list, comparison):
                 'measureAxis': 'Jumlah Orang'
             }
 
-            field = pct_list[index]['chartName']
+            field = pct_list[index]['field']
             pct_list[index]['chartName'] = \
                 "Persentase Orang dalam Kategori '" + field + \
                 "' menurut Kecamatan"
@@ -640,7 +640,8 @@ def create_data_by_region_qty(region_list, category):
 
         qty_list.append({
             'chartType': 'bar',
-            'chartName': field,
+            'chartName': '',
+            'field': field,
             'dataFields': {
                 'values': [data_unit[1] for data_unit in data],
                 'labels': [capitalize(data_unit[0]) 
@@ -649,8 +650,8 @@ def create_data_by_region_qty(region_list, category):
         })
 
     qty_list = sorted(qty_list, 
-               key=lambda x: get_field_display_order(x['chartName']))
-    label_list = [chart['chartName'] for chart in qty_list]
+               key=lambda x: get_field_display_order(x['field']))
+    label_list = [chart['field'] for chart in qty_list]
 
     return (qty_list, label_list)
 
@@ -666,7 +667,8 @@ def create_data_by_region_pct(chart_list, dataset_total_list):
 
         pct_list.append({
             'chartType': 'bar',
-            'chartName': chart['chartName'],
+            'chartName': '',
+            'field': chart['field'],
             'dataFields': {
                 'values': pct_value_list,
                 'labels': chart['dataFields']['labels']

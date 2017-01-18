@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import Store from 'store2';
+import Axios from 'axios';
+import Utils from './utils';
 
 import JakartaMap from './JakartaMap';
 import Button from './Button';
 import ChartList from './ChartList';
+import LabelBar from './LabelBar';
 
 {/* Props
   - selectedCategory (string)
@@ -17,15 +20,112 @@ class DataDisplay extends React.Component {
   constructor(props) {
     super(props);
     this.onSelectComparison = this.onSelectComparison.bind(this);
+    this.onSelectLabel = this.onSelectLabel.bind(this);
+    this.getChartList = this.getChartList.bind(this);
+    this.filterChart = this.filterChart.bind(this);
 
     this.state = {
-      selectedComparison: "field"
+      selectedComparison: 'field',
+      selectedLabelList: [],
+      labelList: [],
+      chartList: []
     }
   }
   onSelectComparison(comparison, event) {
     this.setState({
       selectedComparison: comparison
     })
+  }
+  onSelectLabel(label, event) {
+    const updatedLabelList = this.state.selectedLabelList
+                                       .includes(label) ? 
+                             this.state.selectedLabelList
+                                       .slice()
+                                       .filter((currLabel) =>
+                                               currLabel != label)
+                             :
+                             [...this.state.selectedLabelList, label];
+
+    this.setState({
+      selectedLabelList: updatedLabelList
+    })
+  }
+  componentWillMount() {
+    {/*console.log('HTTP Request');
+    console.log(this.props);
+    console.log(this.state);*/}
+
+    Axios.post('/charts', {
+      comparison: this.state.selectedComparison,
+      region_list: this.props.selectedRegionList.length === 0 ? 
+                   Utils.regionList : this.props.selectedRegionList,
+      category: this.props.selectedCategory
+    })
+    .then((response) => {
+      {/*console.log(response);*/}
+      this.setState({
+        chartList: response.data.chartList,
+        labelList: this.state.selectedComparison === 'region' ? 
+                   response.data.labelList : [],
+        selectedLabelList: this.state.selectedComparison === 'region' ? 
+                           response.data.labelList.slice(0,1) : []
+      });
+    })
+    .catch((err) => {console.log(err);});    
+  }
+  componentWillUpdate(nextProps, nextState) {
+    {/*console.log('HTTP Request');
+    console.log(this.props);
+    console.log(this.state);*/}
+
+    if(this.state.selectedComparison != nextState.selectedComparison || 
+       this.props.selectedCategory != nextProps.selectedCategory) 
+    {
+      
+      Axios.post('/charts', {
+        comparison: nextState.selectedComparison,
+        region_list: nextProps.selectedRegionList.length === 0 ? 
+                     Utils.regionList : nextProps.selectedRegionList,
+        category: nextProps.selectedCategory
+      })
+      .then((response) => {
+        {/*console.log(response);*/}
+        this.setState({
+          chartList: response.data.chartList,
+          labelList: nextState.selectedComparison === 'region' ? 
+                     response.data.labelList : [],
+          selectedLabelList: this.state.selectedComparison === 'region' ? 
+                             response.data.labelList.slice(0,1) : []
+        });
+      })
+      .catch((err) => {console.log(err);});
+    }
+    else if(this.props.selectedRegionList != nextProps.selectedRegionList) {
+      Axios.post('/charts', {
+        comparison: nextState.selectedComparison,
+        region_list: nextProps.selectedRegionList.length === 0 ? 
+                     Utils.regionList : nextProps.selectedRegionList,
+        category: nextProps.selectedCategory
+      })
+      .then((response) => {
+        console.log(response);
+        this.setState({
+          chartList: response.data.chartList,
+          labelList: nextState.selectedComparison === 'region' ? 
+                     response.data.labelList : []
+        });
+      })
+      .catch((err) => {console.log(err);});      
+    }
+  }
+  getChartList() {
+    return this.state.selectedComparison === 'field' ?
+           this.state.chartList :
+           this.state.chartList.filter(this.filterChart);
+  }
+  filterChart(chart) {
+    return this.state.selectedLabelList.includes(chart.field) 
+           ? true : false;
   }
   render() {
     return (
@@ -35,10 +135,19 @@ class DataDisplay extends React.Component {
             onSelectComparison={this.onSelectComparison}
             selectedComparison={this.state.selectedComparison} 
             selectedRegionList={this.props.selectedRegionList}/>
+          {this.state.selectedComparison === 'region' ? 
+           (<LabelBar 
+             onSelectLabel={this.onSelectLabel}
+             selectedLabelList={this.state.selectedLabelList}
+             labelList={this.state.labelList}/>)
+           :
+           null
+          }
           <ChartList 
             selectedCategory={this.props.selectedCategory}
             selectedComparison={this.state.selectedComparison}
-            selectedRegionList={this.props.selectedRegionList}/>
+            selectedRegionList={this.props.selectedRegionList}
+            chartList={this.getChartList()}/>
         </div>
       </div>
     )
@@ -61,37 +170,54 @@ class ComparisonBar extends React.Component {
   constructor(props) {
     super(props);
     this.isComparisonSelected = this.isComparisonSelected.bind(this);
+    this.isComparisonHoveredOver = this.isComparisonHoveredOver.bind(this);
+    this.onHoverOnComparison = this.onHoverOnComparison.bind(this);
+    this.state = ({
+      hoveredComparison: ''
+    })
   }
   isComparisonSelected(comparison) {
     return this.props.selectedComparison === comparison;
+  }
+  isComparisonHoveredOver(comparison) {
+    return this.state.hoveredComparison === comparison
+  }
+  onHoverOnComparison(comparison, event) {
+    if(event.type === 'mouseout') {
+      this.setState({
+        hoveredComparison: ''
+      })
+    }
+    else if(event.type === 'mouseover') {
+      this.setState({
+        hoveredComparison: comparison
+      })
+    }
   }
   render() {
     return (
       <div className="ComparisonBar">
         <Button 
           key={1} text={"Bandingkan bidang"} 
-          selected={this.isComparisonSelected("field")}
+          isSelected={this.isComparisonSelected("field")}
           onButtonClick={this.props.onSelectComparison
-                                   .bind(this, "field")}/>
+                                   .bind(this, "field")}
+          isHoveredOver={this.isComparisonHoveredOver('field')}
+          onHover={this.onHoverOnComparison.bind(this, 'field')} />
         {this.props.selectedRegionList.length < 2 ?
-         null : (<Button 
-                  key={2} text={"Bandingkan kecamatan"}
-                  selected={this.isComparisonSelected("region")}
-                  onButtonClick={this.props.onSelectComparison
-                                           .bind(this, "region")}/>)}
+         null 
+         : 
+         (<Button 
+            key={2} text={"Bandingkan kecamatan"}
+            isSelected={this.isComparisonSelected("region")}
+            onButtonClick={this.props.onSelectComparison
+                                     .bind(this, "region")}
+            isHoveredOver={this.isComparisonHoveredOver('region')}
+            onHover={this.onHoverOnComparison.bind(this, 'region')} />)
+        }
       </div>
     )
   }
-}
-
-const LoremIpsum = (props) => {
-  return (
-    <p>
-      "It is a period of civil war. Rebel spaceships, striking from a hidden base, have won their first victory against the evil Galactic Empire.
-      During the battle, Rebel spies managed to steal secret plans to the Empire's ultimate weapon, the DEATH STAR, an armored space station with enough power to destroy an entire planet.
-      Pursued by the Empire's sinister agents, Princess Leia races home aboard her starship, custodian of the stolen plans that can save her people and restore freedom to the galaxy....
-    </p>
-  )
 }
 
 module.exports = DataDisplay;
