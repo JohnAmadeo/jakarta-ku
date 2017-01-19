@@ -10,28 +10,52 @@ body {
 
 /* Header */
 #app .navbar {
-  border: 1px solid black;
+  border-bottom: 2px solid #E27171;
+  background-color: #FF8383;
+}
+
+#app .Header {
+  font-family: 'Droid Serif', serif;
 }
 
 #app .Header .navbar-brand {
-  color: #000000;
+  color: #FFFFFF;
+  font-size: 24px;
 }
 
 /* Button */
-#app .Button {
+#app .Button.is-red {
   background-color: #FFFFFF;
   color: #FF8383;
   border: 1px solid #FF8383;
 }
 
-#app .Button.is-selected {
+#app .Button.is-selected.is-red{
   background-color: #FF8383;
   color: #FFFFFF;
   border: 1px solid #FFFFFF; 
 }
 
-#app .Button.is-hovered-over {
+#app .Button.is-hovered-over.is-red {
   background-color: #FF8383;
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;   
+}
+
+#app .Button.is-blue {
+  background-color: #FFFFFF;
+  color: #36A2EB;
+  border: 1px solid #36A2EB;
+}
+
+#app .Button.is-selected.is-blue{
+  background-color: #36A2EB;
+  color: #FFFFFF;
+  border: 1px solid #36A2EB; 
+}
+
+#app .Button.is-hovered-over.is-blue {
+  background-color: #36A2EB;
   color: #FFFFFF;
   border: 1px solid #FFFFFF;   
 }
@@ -41,6 +65,7 @@ body {
   /*border: 1px solid blue;*/
   display: block;
   text-align: center;
+  margin-top: 10px;
 }
 
 @media (min-width: 0px) and (max-width: 630px) {
@@ -127,7 +152,6 @@ body {
 }
 
 #app .RegionList .btn{
-  font-size: 14px;
   padding: 5px 15px;
   text-align: left;
   border-radius: 15px;
@@ -196,21 +220,22 @@ body {
 
 #app .LabelBar {
   margin-top: 10px;
+  margin-bottom: 15px;
+  text-align: center-left; 
 }
 
 #app .LabelBar .btn {
-  font-size: 14px;
+  font-size: 12px;
   padding: 5px 15px;
-  text-align: left;
   border-radius: 15px;
-  margin: 5px 5px 0px 0px;  
+  margin: 10px 5px 0px 0px;  
 }
 
 /* Graphic */
 #app .Graphic {
   padding: 10px;
   margin: 0 0 100px 0;
-  border: 1px solid #FF8383;
+  /*border: 1px solid #FF8383;*/
   display: inline-block;
 }
 
