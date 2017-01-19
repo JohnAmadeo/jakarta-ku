@@ -33,8 +33,8 @@ var utils = {
     Object.keys(this).filter((key) => key != "getKeys")
                      .map((key) => {console.log(key);})
   },
-  getColorPalette: function(numColors) {
-    const bgColors = [
+  palette: {
+    backgroundColors: [
       'rgba(255, 131, 131, 0.2)',
       'rgba(54, 162, 235, 0.2)',
       'rgba(255, 206, 86, 0.2)',
@@ -44,9 +44,9 @@ var utils = {
       'rgba(99, 234, 255, 0.2)',
       'rgba(252, 110, 63, 0.2)',
       'rgba(79, 247, 135, 0.2)',
-      'rgba(96, 120, 255, 0.2)',
-    ];
-    const borderColors = [
+      'rgba(96, 120, 255, 0.2)'
+    ],
+    borderColors: [
       'rgba(255,131,131,1)',
       'rgba(54, 162, 235, 1)',
       'rgba(255, 206, 86, 1)',
@@ -57,16 +57,23 @@ var utils = {
       'rgba(252, 110, 63, 1)',
       'rgba(79, 247, 135, 1)',
       'rgba(96, 120, 255, 1)',
-    ];
-    const paletteSize = 10;
+    ]
+  },
+  getPalette: function(numColors, startColor) {
+    const backgroundColors = this.palette.backgroundColors;
+    const borderColors = this.palette.borderColors;
+    const paletteSize = backgroundColors.length;
+    const offset = backgroundColors.indexOf(startColor);
 
     return {
-      background: Array(numColors).fill('')
-                                  .map((elem, index) => 
-                                       bgColors[index % paletteSize]),
-      border: Array(numColors).fill('')
-                              .map((elem, index) => 
-                                   borderColors[index % paletteSize])
+      background: Array(numColors)
+                  .fill('')
+                  .map((elem, index) => 
+                       backgroundColors[(index + offset) % paletteSize]),
+      border: Array(numColors)
+              .fill('')
+              .map((elem, index) => 
+                    borderColors[(index + offset) % paletteSize])
     }
   }  
 }

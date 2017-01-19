@@ -51,10 +51,6 @@ class DataDisplay extends React.Component {
     })
   }
   componentWillMount() {
-    {/*console.log('HTTP Request');
-    console.log(this.props);
-    console.log(this.state);*/}
-
     Axios.post('/charts', {
       comparison: this.state.selectedComparison,
       region_list: this.props.selectedRegionList.length === 0 ? 
@@ -89,7 +85,7 @@ class DataDisplay extends React.Component {
         category: nextProps.selectedCategory
       })
       .then((response) => {
-        {/*console.log(response);*/}
+        console.log(response);
         this.setState({
           chartList: response.data.chartList,
           labelList: nextState.selectedComparison === 'region' ? 
@@ -203,7 +199,8 @@ class ComparisonBar extends React.Component {
           onButtonClick={this.props.onSelectComparison
                                    .bind(this, "field")}
           isHoveredOver={this.isComparisonHoveredOver('field')}
-          onHover={this.onHoverOnComparison.bind(this, 'field')} />
+          onHover={this.onHoverOnComparison.bind(this, 'field')} 
+          colorScheme={'red'} />
         {this.props.selectedRegionList.length < 2 ?
          null 
          : 
@@ -213,7 +210,8 @@ class ComparisonBar extends React.Component {
             onButtonClick={this.props.onSelectComparison
                                      .bind(this, "region")}
             isHoveredOver={this.isComparisonHoveredOver('region')}
-            onHover={this.onHoverOnComparison.bind(this, 'region')} />)
+            onHover={this.onHoverOnComparison.bind(this, 'region')} 
+            colorScheme={'red'} />)
         }
       </div>
     )

@@ -23,6 +23,9 @@ import Measure from 'react-measure';
       measureAxis: 'Jumlah Orang'
       tooltipStringFormat: //func?
     }
+
+    palette (array of strings)
+    ['#FFFFFF', '#000000']
 */}
 
 class Graphic extends React.Component {
@@ -125,7 +128,8 @@ class Graphic extends React.Component {
                   dataOptions={this.props.dataOptions} 
                   maxBarWidth={this.maxBarWidth}
                   shouldRedraw={this.state.shouldRedraw}
-                  getNumberFormat={this.getNumberFormat}/>
+                  getNumberFormat={this.getNumberFormat}
+                  palette={this.props.palette}/>
       )
     }
     else if(this.props.chartType === 'doughnut') {
@@ -133,7 +137,8 @@ class Graphic extends React.Component {
         <DoughnutChart dataFields={this.props.dataFields} 
                        dataOptions={this.props.dataOptions}
                        shouldRedraw={this.state.shouldRedraw}
-                       getNumberFormat={this.getNumberFormat}/>
+                       getNumberFormat={this.getNumberFormat}
+                       palette={this.props.palette}/>
       )
     }
   }
@@ -177,6 +182,9 @@ Graphic.propTypes = {
     shouldRedraw (bool)
     - true if chart should be redrawn to 
       adjust chart size; false otherwise
+
+    palette (array of strings)
+    ['#FFFFFF', '#000000']    
 */}
 
 class BarChart extends React.Component {
@@ -190,17 +198,16 @@ class BarChart extends React.Component {
     this.getMeasureTickLabel = this.getMeasureTickLabel.bind(this);
   }
   getChartData() {
-    const palette = Utils.getColorPalette(this.props.dataFields.values.length);
     const barData = {
-        labels: this.props.dataFields.labels,
-        datasets: [
-            {
-                backgroundColor: palette.background,
-                borderColor: palette.border,
-                borderWidth: 1,
-                data: this.props.dataFields.values
-            }
-        ]
+      labels: this.props.dataFields.labels,
+      datasets: [
+          {
+              backgroundColor: this.props.palette.background,
+              borderColor: this.props.palette.border,
+              borderWidth: 1,
+              data: this.props.dataFields.values
+          }
+      ]
     };
     return barData;
   }
@@ -318,14 +325,13 @@ class DoughnutChart extends React.Component {
     this.getTooltipTitle = this.getTooltipTitle.bind(this);
   }
   getChartData() {
-    const palette = Utils.getColorPalette(this.props.dataFields.values.length);
     var pieData = {
         labels: this.props.dataFields.labels,
         datasets: [
           {
-            backgroundColor: palette.background,
-            borderColor: palette.border,
-            hoverBackgroundColor: palette.border,
+            backgroundColor: this.props.palette.background,
+            borderColor: this.props.palette.border,
+            hoverBackgroundColor: this.props.palette.border,
             data: this.props.dataFields.values
           }
         ]

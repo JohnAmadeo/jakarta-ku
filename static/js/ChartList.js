@@ -24,6 +24,23 @@ import LabelBar from './LabelBar';
 class ChartList extends React.Component {
   constructor(props) {
     super(props);
+    this.getPalette = this.getPalette.bind(this);
+  }
+  getPalette(chart) {
+    if(this.props.selectedComparison === 'field') {
+      return Utils.getPalette(chart.dataFields.values.length,
+                              Utils.palette.backgroundColors[0])
+    }
+    else if(this.props.selectedComparison === 'region') {
+      if(chart.chartName.includes('Persentase')) {
+        return Utils.getPalette(chart.dataFields.values.length,
+                                Utils.palette.backgroundColors[0])
+      }
+      else if(chart.chartName.includes('Jumlah')) {
+        return Utils.getPalette(chart.dataFields.values.length,
+                                Utils.palette.backgroundColors[2])
+      }
+    }
   }
   render() {
     return (
@@ -33,7 +50,8 @@ class ChartList extends React.Component {
                     chartName={chart.chartName}
                     dataFields={chart.dataFields}
                     dataOptions={chart.dataOptions}
-                    key={index}/>)
+                    key={index}
+                    palette={this.getPalette(chart)}/>)
         )}
       </div>
     )
