@@ -696,10 +696,10 @@ def get_dataset_total_list(chart_list):
     return(dataset_total_list)
 
 def round_num(num, total):
-    if num == 0: return 0
-
+    if num == 0: 
+        return 0
     percentage = num / total
-    decimals = 2
+    decimals = 3
     while round(percentage, decimals) == 0:
         decimals += 1
     return round(percentage, decimals)
