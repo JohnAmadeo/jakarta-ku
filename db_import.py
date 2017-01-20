@@ -2,7 +2,7 @@ import pymongo
 import sys, os, json
 import pandas as pd
 
-DB = pymongo.MongoClient("mongodb://heroku_1r8z46f3:lgjti45im49sf0pnhshhghldc2@ds117889.mlab.com:17889/heroku_1r8z46f3", 
+DB = pymongo.MongoClient(os.environ['MONGODB_URI'], 
                          connectTimeoutMS=30000,
                          socketTimeoutMS=None,
                          socketKeepAlive=True)['jakartaku']
