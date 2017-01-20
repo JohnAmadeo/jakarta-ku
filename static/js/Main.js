@@ -76,7 +76,7 @@ const Header = (props) => {
           </div>
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav navbar-right">
-              <li><a href="http://github.com/johnamadeo">Made with joy by John Amadeo</a></li>
+              <li><a href="http://github.com/johnamadeo">Made w/ love by John Amadeo</a></li>
             </ul>
           </div>
       </nav>

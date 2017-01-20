@@ -14,11 +14,8 @@ body {
   background-color: #FF8383;
 }
 
-#app .Header {
-  font-family: 'Droid Serif', serif;
-}
-
 #app .Header .navbar-brand {
+  font-family: 'Droid Serif', serif;
   color: #FFFFFF;
   font-size: 24px;
 }
@@ -86,6 +83,10 @@ body {
   background-color: #72C6FF;
   color: #FFFFFF;
   border: 1px solid #FFFFFF;   
+}
+
+#app .Button:focus {
+  outline: none;
 }
 
 /* CategoryBar */
