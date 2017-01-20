@@ -17,7 +17,6 @@ import Button from './Button';
 
 class MapDisplay extends React.Component {
   constructor(props) {
-    console.log(window);
     super(props);
     this.isRegionSelected = this.isRegionSelected.bind(this);
     this.isRegionHoveredOver = this.isRegionHoveredOver.bind(this);
@@ -34,11 +33,6 @@ class MapDisplay extends React.Component {
     return this.state.hoveredRegionList.includes(region);
   }
   onHoverOnRegion(region, event) {
-    {/* Add region to hoveredRegionList if mouse hovers over region;
-        remove region from hoveredRegionList if hovering out of region */}
-    console.log(this.state.hoveredRegionList.includes(region) ? 'Out' : 'Over');
-    console.log(event.type);
-
     const hoveredRegionList = this.state.hoveredRegionList;
     this.setState({
       hoveredRegionList: 
@@ -52,7 +46,7 @@ class MapDisplay extends React.Component {
     return (
       <div className="MapDisplay row">
         <div className="col-md-6">
-          <SearchBar />
+          {/*<SearchBar />*/}
           <RegionList onSelectRegion={this.props.onSelectRegion}
                       isRegionSelected={this.isRegionSelected}
                       onHoverOnRegion={this.onHoverOnRegion}
@@ -170,7 +164,8 @@ class Region extends React.Component {
         key={this.props.key}
         isSelected={this.props.isRegionSelected(this.props.region)}
         isHoveredOver={this.props.isRegionHoveredOver(this.props.region)}
-        text={this.capitalizeName(this.props.region)} />
+        text={this.capitalizeName(this.props.region)} 
+        colorScheme={'red'}/>
     )
   }
 }

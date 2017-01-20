@@ -45,7 +45,8 @@ class LabelBar extends React.Component {
                    isHoveredOver={this.isLabelHoveredOver(label)}
                    onButtonClick={this.props.onSelectLabel
                                             .bind(this, label)}
-                   onHover={this.onHoverOnLabel.bind(this, label)} />)
+                   onHover={this.onHoverOnLabel.bind(this, label)} 
+                   colorScheme={'blue'}/>)
         )}
       </div>
     )

@@ -266,7 +266,7 @@ class BarChart extends React.Component {
     let lengthLimit = 0;
 
     if(widthPct < 100) {
-      lengthLimit = Math.round(this.props.maxBarWidth / fontSize) + 2; 
+      lengthLimit = Math.round(this.props.maxBarWidth / fontSize); 
     }
     else {      
       lengthLimit = Math.round(

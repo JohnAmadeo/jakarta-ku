@@ -23,6 +23,22 @@ body {
   font-size: 24px;
 }
 
+#app .Header .navbar-right {
+  color: #FFFFFF;
+  font-size: 10px;
+  margin-right: 10px;
+}
+
+#app .Header .navbar-right a {
+  color: #FFFFFF;
+}
+
+#app .Header .navbar-right a:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+  background-color: #FF8383;
+}
+
 /* Button */
 #app .Button.is-red {
   background-color: #FFFFFF;

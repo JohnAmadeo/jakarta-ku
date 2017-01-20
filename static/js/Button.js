@@ -13,6 +13,8 @@ import ClassNames from 'classnames';
     true if button is hovered over; false otherwise
   - text (string)
     text the button should display
+  - colorScheme (one of string)
+    color of string to display; 'red' or 'blue'
 */}
 
 const Button = (props) => {
@@ -22,7 +24,9 @@ const Button = (props) => {
     'btn-default': true,
     'Button': true,
     'is-selected': props.isSelected,
-    'is-hovered-over': props.isHoveredOver
+    'is-hovered-over': props.isHoveredOver,
+    'is-red': props.colorScheme === 'red',
+    'is-blue': props.colorScheme === 'blue'
   });
 
   return (

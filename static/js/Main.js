@@ -26,7 +26,7 @@ class Main extends React.Component {
     });
   }
   onSelectRegion(region, event) {
-    const newselectedRegionList 
+    const newSelectedRegionList 
       = this.state.selectedRegionList.includes(region) ?
         this.state.selectedRegionList
           .slice()
@@ -34,7 +34,7 @@ class Main extends React.Component {
         [...this.state.selectedRegionList, region];
 
     this.setState({
-      selectedRegionList: newselectedRegionList
+      selectedRegionList: newSelectedRegionList
     })
   }
   render() {
@@ -73,6 +73,11 @@ const Header = (props) => {
       <nav className="navbar navbar-fixed-top">
           <div className="navbar-header">
             <a className="navbar-brand" href="#">JakartaKu</a>
+          </div>
+          <div id="navbar" className="navbar-collapse collapse">
+            <ul className="nav navbar-nav navbar-right">
+              <li><a href="http://github.com/johnamadeo">Made with joy by John Amadeo</a></li>
+            </ul>
           </div>
       </nav>
     </div>
@@ -131,7 +136,8 @@ class CategoryBar extends React.Component {
           isSelected={this.isCategorySelected(category)}
           isHoveredOver={this.isCategoryHoveredOver(category)}
           text={categoryInIndo[0].toUpperCase() + 
-                categoryInIndo.substr(1)} />
+                categoryInIndo.substr(1)} 
+          colorScheme={'blue'} />
       )
     });
   }

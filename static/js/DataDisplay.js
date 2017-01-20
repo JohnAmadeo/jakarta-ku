@@ -23,6 +23,7 @@ class DataDisplay extends React.Component {
     this.onSelectLabel = this.onSelectLabel.bind(this);
     this.getChartList = this.getChartList.bind(this);
     this.filterChart = this.filterChart.bind(this);
+    this.getRegionList = this.getRegionList.bind(this);
 
     this.state = {
       selectedComparison: 'field',
@@ -53,8 +54,7 @@ class DataDisplay extends React.Component {
   componentWillMount() {
     Axios.post('/charts', {
       comparison: this.state.selectedComparison,
-      region_list: this.props.selectedRegionList.length === 0 ? 
-                   Utils.regionList : this.props.selectedRegionList,
+      region_list: this.getRegionList(this.props, this.state),
       category: this.props.selectedCategory
     })
     .then((response) => {
@@ -70,18 +70,12 @@ class DataDisplay extends React.Component {
     .catch((err) => {console.log(err);});    
   }
   componentWillUpdate(nextProps, nextState) {
-    {/*console.log('HTTP Request');
-    console.log(this.props);
-    console.log(this.state);*/}
-
     if(this.state.selectedComparison != nextState.selectedComparison || 
        this.props.selectedCategory != nextProps.selectedCategory) 
     {
-      
       Axios.post('/charts', {
         comparison: nextState.selectedComparison,
-        region_list: nextProps.selectedRegionList.length === 0 ? 
-                     Utils.regionList : nextProps.selectedRegionList,
+        region_list: this.getRegionList(nextProps, nextState),
         category: nextProps.selectedCategory
       })
       .then((response) => {
@@ -99,8 +93,7 @@ class DataDisplay extends React.Component {
     else if(this.props.selectedRegionList != nextProps.selectedRegionList) {
       Axios.post('/charts', {
         comparison: nextState.selectedComparison,
-        region_list: nextProps.selectedRegionList.length === 0 ? 
-                     Utils.regionList : nextProps.selectedRegionList,
+        region_list: this.getRegionList(nextProps, nextState),
         category: nextProps.selectedCategory
       })
       .then((response) => {
@@ -122,6 +115,23 @@ class DataDisplay extends React.Component {
   filterChart(chart) {
     return this.state.selectedLabelList.includes(chart.field) 
            ? true : false;
+  }
+  getRegionList(currProps, currState) {
+    let region_list = [];
+    if(currProps.selectedRegionList.length === 0 &&
+       currState.selectedComparison === 'field') 
+    {
+      return Utils.regionList;
+    }
+    else if(currProps.selectedRegionList.length < 2 &&
+            currState.selectedComparison === 'region') 
+    {
+      return [];
+    }
+    else {
+      region_list = currProps.selectedRegionList;
+    }
+    return region_list;
   }
   render() {
     return (
