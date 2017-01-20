@@ -7,7 +7,6 @@ import MapDisplay from './MapDisplay';
 import DataDisplay from './DataDisplay';
 import Button from './Button';
 
-
 class Main extends React.Component {
   constructor(props) {
     super(props);
@@ -17,7 +16,8 @@ class Main extends React.Component {
     this.state = {
       selectedCategory: "education",
       searchText: "",
-      selectedRegionList: []
+      selectedRegionList: [],
+      language: 'english'
     }
   }
   onSelectCategory(category, event) {
@@ -42,7 +42,8 @@ class Main extends React.Component {
       <div className='Main'>
         <Header />
         <CategoryBar onSelectCategory={this.onSelectCategory}
-                     selectedCategory={this.state.selectedCategory}/>
+                     selectedCategory={this.state.selectedCategory}
+                     language={this.state.language}/>
 
         <MapDisplay 
           onSelectRegion={this.onSelectRegion}
@@ -50,7 +51,8 @@ class Main extends React.Component {
 
         <DataDisplay 
           selectedCategory={this.state.selectedCategory}
-          selectedRegionList = {this.state.selectedRegionList}/>
+          selectedRegionList = {this.state.selectedRegionList}
+          language={this.state.language}/>
       </div>
     )
   }
@@ -99,6 +101,10 @@ class CategoryBar extends React.Component {
     this.isCategorySelected = this.isCategorySelected.bind(this);
     this.isCategoryHoveredOver = this.isCategoryHoveredOver.bind(this);
     this.onHoverOnCategory = this.onHoverOnCategory.bind(this);
+    this.capitalize = this.capitalize.bind(this);
+
+    this.categoryListInIndo = ['pendidikan', 'demografi', 'agama',
+                               'pekerjaan', 'pernikahan'];
 
     this.state = {
       hoveredCategory: '',
@@ -123,9 +129,7 @@ class CategoryBar extends React.Component {
     }
   }
   renderButtonList() {
-    const categoryListInIndo = ['pendidikan', 'demografi', 'agama',
-                                'pekerjaan', 'pernikahan'];
-    return categoryListInIndo.map((categoryInIndo, index) => {
+    return this.categoryListInIndo.map((categoryInIndo, index) => {
       const category = Utils.translate(categoryInIndo);
       return (
         <Button 
@@ -135,11 +139,15 @@ class CategoryBar extends React.Component {
           key={index}
           isSelected={this.isCategorySelected(category)}
           isHoveredOver={this.isCategoryHoveredOver(category)}
-          text={categoryInIndo[0].toUpperCase() + 
-                categoryInIndo.substr(1)} 
+          text={this.props.language === 'english' ? 
+                this.capitalize(category) : 
+                this.capitalize(categoryInIndo)}
           colorScheme={'blue'} />
       )
     });
+  }
+  capitalize(str) {
+    return str[0].toUpperCase() + str.substr(1);   
   }
   render() {
     return (

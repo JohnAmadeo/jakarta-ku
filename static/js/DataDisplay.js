@@ -15,6 +15,8 @@ import LabelBar from './LabelBar';
 
   - selectedRegionList (array of strings)
     array of names of all currently selected regions
+
+  - language (string)
 */}
 class DataDisplay extends React.Component {
   constructor(props) {
@@ -140,7 +142,8 @@ class DataDisplay extends React.Component {
           <ComparisonBar 
             onSelectComparison={this.onSelectComparison}
             selectedComparison={this.state.selectedComparison} 
-            selectedRegionList={this.props.selectedRegionList}/>
+            selectedRegionList={this.props.selectedRegionList}
+            language={this.props.language}/>
           {this.state.selectedComparison === 'region' ? 
            (<LabelBar 
              onSelectLabel={this.onSelectLabel}
@@ -204,7 +207,9 @@ class ComparisonBar extends React.Component {
     return (
       <div className="ComparisonBar">
         <Button 
-          key={1} text={"Bandingkan bidang"} 
+          key={1} 
+          text={this.props.language === 'english' ? 
+                'Compare by Field' : 'Bandingkan bidang'} 
           isSelected={this.isComparisonSelected("field")}
           onButtonClick={this.props.onSelectComparison
                                    .bind(this, "field")}
@@ -215,7 +220,9 @@ class ComparisonBar extends React.Component {
          null 
          : 
          (<Button 
-            key={2} text={"Bandingkan kecamatan"}
+            key={2} 
+            text={this.props.language === 'english' ? 
+                  'Compare by Region' : 'Bandingkan kecamatan'}
             isSelected={this.isComparisonSelected("region")}
             onButtonClick={this.props.onSelectComparison
                                      .bind(this, "region")}
