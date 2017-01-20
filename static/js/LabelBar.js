@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import Store from 'store2';
-import Request from 'superagent';
 import Axios from 'axios';
 import Utils from './utils';
 
