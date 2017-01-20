@@ -7,7 +7,7 @@ import os, json
 DATABASE = MongoClient().get_database('jakartaku')
 
 def main():
-    chart_list = create_demographics_chart(['koja', 'tebet'], 'region')
+    chart_list = create_chart_list('region', [], 'demographics')
 
 # Props 
 #     chartType (string)
@@ -39,7 +39,9 @@ def create_chart_list(comparison, region_list, category):
     Returns
     chart_list: list of charts i.e objects to display         
     """
-    if category == 'education':
+    if len(region_list) == 0:
+        return {'chartList': [],'labelList': []}
+    elif category == 'education':
         return create_education_chart(region_list, comparison)
     elif category == 'occupation':
         return create_occupation_chart(region_list, comparison)
