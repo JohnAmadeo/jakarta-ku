@@ -30,12 +30,10 @@ def main():
 def create_chart_list(comparison, region_list, category):
     """
     Create a list of charts to display 
-
     Args
     comparison: compare data in the category by field or by region
     region_list: list of regions whose data will be examined
     category: category of the dataset examined
-
     Returns
     chart_list: list of charts i.e objects to display         
     """
@@ -55,11 +53,9 @@ def create_chart_list(comparison, region_list, category):
 def create_religion_chart(region_list, comparison):
     """
     Create list of charts to display data from the religion category 
-
     Args
     region_list: list of regions whose data will be examined
     comparison: compare data in the category by field or by region
-
     Returns
     chart_list: list of charts i.e objects to display          
     """
@@ -131,11 +127,9 @@ def create_religion_chart(region_list, comparison):
 def create_education_chart(region_list, comparison):
     """
     Create list of charts to display data from the education category 
-
     Args
     region_list: list of regions whose data will be examined
     comparison: compare data in the category by field or by region
-
     Returns
     chart_list: list of charts i.e objects to display          
     """
@@ -207,11 +201,9 @@ def create_education_chart(region_list, comparison):
 def create_marriage_chart(region_list, comparison):
     """
     Create list of charts to display data from the marriage category 
-
     Args
     region_list: list of regions whose data will be examined
     comparison: compare data in the category by field or by region
-
     Returns
     chart_list: list of charts i.e objects to display          
     """
@@ -290,11 +282,9 @@ def create_marriage_chart(region_list, comparison):
 def create_occupation_chart(region_list, comparison):
     """
     Create list of charts to display data from the occupation category 
-
     Args
     region_list: list of regions whose data will be examined
     comparison: compare data in the category by field or by region
-
     Returns
     chart_list: list of charts i.e objects to display          
     """
@@ -382,11 +372,9 @@ def create_occupation_chart(region_list, comparison):
 def create_demographics_chart(region_list, comparison):
     """
     Create list of charts to display data from the demographics category 
-
     Args
     region_list: list of regions whose data will be examined
     comparison: compare data in the category by field or by region
-
     Returns
     chart_list: list of charts i.e objects to display          
     """
@@ -551,7 +539,6 @@ def create_data_by_field_qty(region_list, category):
     Args
     region_list: list of regions whose data will be examined
     category: category of the dataset
-
     Returns
     chart: a chart displaying 
     """
