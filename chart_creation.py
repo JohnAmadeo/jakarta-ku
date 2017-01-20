@@ -4,7 +4,11 @@ from pymongo import MongoClient
 from field_utils import get_field_display_order, get_field_list
 import os, json
 
-DATABASE = MongoClient().get_database('jakartaku')
+DATABASE = MongoClient(os.environ['MONGODB_URI'], 
+                       connectTimeoutMS=30000,
+                       socketTimeoutMS=None,
+                       socketKeepAlive=True).get_database('jakartaku')
+# db.authenticate(heroku_1r8z46f3, lgjti45im49sf0pnhshhghldc2)
 
 def main():
     chart_list = create_chart_list('region', [], 'demographics')
