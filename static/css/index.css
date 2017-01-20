@@ -53,9 +53,15 @@ body {
 }
 
 #app .Button.is-hovered-over.is-red {
-  background-color: #FF8383;
+  background-color: #FCABAB;
   color: #FFFFFF;
   border: 1px solid #FFFFFF;   
+}
+
+#app .Button.is-hovered-over.is-selected.is-red {
+  background-color: #FCABAB;
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;  
 }
 
 #app .Button.is-blue {
@@ -71,7 +77,13 @@ body {
 }
 
 #app .Button.is-hovered-over.is-blue {
-  background-color: #36A2EB;
+  background-color: #72C6FF;
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;   
+}
+
+#app .Button.is-hovered-over.is-selected.is-blue {
+  background-color: #72C6FF;
   color: #FFFFFF;
   border: 1px solid #FFFFFF;   
 }
@@ -204,7 +216,12 @@ body {
 }
 
 #app .JakartaMap path.is-hovered-over {
-  fill: #FF8383;
+  fill: #FCABAB;
+  stroke: #CC4B4B;
+}
+
+#app .JakartaMap path.is-hovered-over.is-selected {
+  fill: #FCABAB;
   stroke: #CC4B4B;
 }
 
