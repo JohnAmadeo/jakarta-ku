@@ -7,12 +7,12 @@ import os, json
 DATABASE = MongoClient(os.environ['MONGODB_URI'], 
                        connectTimeoutMS=30000,
                        socketTimeoutMS=None,
-                       socketKeepAlive=True).get_database('jakartaku')
+                       socketKeepAlive=True).get_database('heroku_1r8z46f3')
+# DATABASE = MongoClient().get_database('jakartaku')
 # db.authenticate(heroku_1r8z46f3, lgjti45im49sf0pnhshhghldc2)
 
 def main():
-    chart_list = create_chart_list('region', [], 'demographics')
-
+    chart_list = create_education_chart(['koja','tebet'],'field')
 # Props 
 #     chartType (string)
 #     'bar' or 'doughnut'
@@ -32,6 +32,7 @@ def main():
 #     }
 
 def create_chart_list(comparison, region_list, category):
+    print(comparison, region_list, category)
     """
     Create a list of charts to display 
     Args
@@ -556,9 +557,13 @@ def create_data_by_field_qty(region_list, category):
     # get list of all category fields
     field_list = get_field_list(collection)
 
-    project_object = {'_id': 1}
+    # project_object = {'_id': 1}
+    project_object_w_id = {'_id': 0}
+    project_object_wo_id = {'_id': 0}
     for field in field_list:
-        project_object[field] = 1
+        project_object_w_id[field] = 1
+        project_object_wo_id[field] = 1
+
 
     group_object = {'_id': 'null'}
     for field in field_list:
@@ -567,9 +572,9 @@ def create_data_by_field_qty(region_list, category):
     cursor = \
     collection.aggregate([
         {'$match': {'$or': match_list} }, 
-        {'$project': project_object },
+        {'$project': project_object_w_id },
         {'$group': group_object },
-        {'$project': {'_id': 0} }        
+        {'$project': project_object_wo_id }        
     ])
 
     data = None
