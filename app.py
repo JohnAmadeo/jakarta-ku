@@ -1,9 +1,10 @@
 from __future__ import print_function
 from flask import Flask, render_template, request, redirect, make_response, Response
-from chartcreation import create_chart_list
+from chart_creation import create_chart_list
 import os, json
 
 app = Flask(__name__)
+
 
 @app.route('/')
 def serve_index():
@@ -18,6 +19,7 @@ def serve_charts():
     category = body['category']
 
     chart_list = create_chart_list(comparison, region_list, category)
+
     return Response(response=json.dumps(chart_list),
                     status=200,
                     mimetype='application/json')  
