@@ -18,11 +18,11 @@ const Header = (props) => {
             <ul className="Credit nav navbar-nav navbar-right">
               <li>
                 <a href="http://github.com/johnamadeo">
-                  Made by John Amadeo                    
-                </a>
-                  ,
-                <a> 
-                  Data from 
+                  Made by John Amadeo,</a>
+              </li>
+              <li>
+                <a href="http://data.jakarta.go.id/">
+                  Data from Jakarta OpenData                 
                 </a>
               </li>
             </ul>

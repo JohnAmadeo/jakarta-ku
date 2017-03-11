@@ -34,8 +34,7 @@ const Button = (props) => {
               className={cssClasses}       
               onClick={props.onButtonClick}
               onMouseOver={props.onHover}
-              onMouseOut={props.onHover}
-              onTouchEnd={props.onHover}>
+              onMouseOut={props.onHover}>
 
         {(props.isSelected || props.isHoveredOver) ? 
           (<span>&minus; &nbsp;</span>) : (<span>&#43; &nbsp;</span>)} 

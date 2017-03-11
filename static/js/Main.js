@@ -94,7 +94,7 @@ class CategoryBar extends React.Component {
     return this.state.hoveredCategory === category;
   }
   onHoverOnCategory(category, event) {
-    if(event.type === 'mouseout' || event.type === 'touchend') {
+    if(event.type === 'mouseout') {
       this.setState({
         hoveredCategory: ''
       })

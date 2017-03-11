@@ -33,6 +33,7 @@ body {
 
 #app .Header .Credit a {
   color: #FFFFFF;
+  padding: 15px 0px 15px 5px;
 }
 
 #app .Header .Credit a:hover {
