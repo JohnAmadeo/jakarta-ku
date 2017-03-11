@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import EmojiOne from 'emojione';
 
 {/* Props
   - N/A
