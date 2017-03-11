@@ -50,7 +50,7 @@ class MapDisplay extends React.Component {
           <RegionList onSelectRegion={this.props.onSelectRegion}
                       isRegionSelected={this.isRegionSelected}
                       onHoverOnRegion={this.onHoverOnRegion}
-                      isRegionHoveredOver={this.isRegionHoveredOver}/>
+                      isRegionHoveredOver={this.isRegionHoveredOver} />
         </div>
         <div className="col-md-6">
           <JakartaMap onSelectRegion={this.props.onSelectRegion} 
@@ -108,9 +108,11 @@ class RegionList extends React.Component {
     super(props);
   }
   render() {
+    const utils = new Utils();
     return (
       <div className="RegionList"> 
-        {Utils.regionList.map((region, index) => (
+        {utils.getDataList('region', 'N/A')
+              .map((region, index) => (
           <Region region={region} key={index}
                   onSelectRegion={this.props.onSelectRegion}
                   isRegionSelected={this.props.isRegionSelected}

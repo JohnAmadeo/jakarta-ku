@@ -1,19 +1,21 @@
 from __future__ import print_function
-from flask import Flask, render_template, request, redirect, make_response, Response
 from pymongo import MongoClient
 from field_utils import get_field_display_order, get_field_list
-import os, json
+import os
+import json
 
-DATABASE = MongoClient(os.environ['MONGODB_URI'], 
+DATABASE = MongoClient(os.environ['MONGODB_URI'],
                        connectTimeoutMS=30000,
                        socketTimeoutMS=None,
                        socketKeepAlive=True).get_database('heroku_1r8z46f3')
 # DATABASE = MongoClient().get_database('jakartaku')
 # db.authenticate(heroku_1r8z46f3, lgjti45im49sf0pnhshhghldc2)
 
+
 def main():
-    chart_list = create_education_chart(['koja','tebet'],'field')
-# Props 
+    chart_list = create_education_chart(['koja', 'tebet'], 'field')
+    print(chart_list)
+# Props
 #     chartType (string)
 #     'bar' or 'doughnut'
 #     chartName (string)
@@ -138,6 +140,8 @@ def create_education_chart(region_list, comparison):
     Returns
     chart_list: list of charts i.e objects to display          
     """
+    print('education chart HI')
+    print(comparison)
     if comparison == 'field':
         qty_data = create_data_by_field_qty(region_list, 'education')
         qty_chart = {
@@ -171,6 +175,8 @@ def create_education_chart(region_list, comparison):
     elif comparison == 'region':
         (qty_list, label_list) = \
             create_data_by_region_qty(region_list, 'education')
+
+        print(qty_list, label_list)
 
         dataset_total_list = get_dataset_total_list(qty_list)
         pct_list = create_data_by_region_pct(qty_list, 
@@ -708,8 +714,9 @@ def all_x(elem_list, check_elem):
             return False
     return True
 
+
 def jsonprint(obj):
-    """Prints Mongo document i.e Python object 
+    """Prints Mongo document i.e Python object
     """
     try:
         print(json.dumps(obj, sort_keys=True, indent=4))
@@ -717,6 +724,7 @@ def jsonprint(obj):
         obj_copy = obj.copy()
         del obj_copy['_id']
         print(json.dumps(obj_copy, sort_keys=True, indent=4))
+
 
 def capitalize(name):
     return ''.join([(word[0].upper() + word[1:] + ' ') 

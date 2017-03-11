@@ -21,8 +21,8 @@ def serve_charts():
     chart_list = create_chart_list(comparison, region_list, category)
 
     return Response(response=json.dumps(chart_list),
-                    status=200,
-                    mimetype='application/json')  
+                status=200,
+                mimetype='application/json') 
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

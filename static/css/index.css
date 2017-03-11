@@ -14,26 +14,54 @@ body {
   background-color: #FF8383;
 }
 
-#app .Header .navbar-brand {
-  font-family: 'Droid Serif', serif;
-  color: #FFFFFF;
-  font-size: 24px;
+#app .Header {
+  font-family: 'Droid Serif', serif;  
 }
 
-#app .Header .navbar-right {
+#app .Header .AppName {
+  color: #FFFFFF;
+  font-size: 24px;
+  /*border: 1px solid black;*/
+}
+
+#app .Header .Credit {
+  font-family: 'Droid Serif', serif;
   color: #FFFFFF;
   font-size: 10px;
   margin-right: 10px;
 }
 
-#app .Header .navbar-right a {
+#app .Header .Credit a {
   color: #FFFFFF;
 }
 
-#app .Header .navbar-right a:hover {
+#app .Header .Credit a:hover {
   color: #FFFFFF;
   text-decoration: underline;
   background-color: #FF8383;
+}
+
+#app .Header .FlagBar {
+  width: 250px;
+  /*border: 1px solid black;*/
+  margin: 0;
+  padding: 10px 10px 0 15px;
+  height: 50px;
+  /*text-align: center;*/
+}
+
+/* Flag */
+#app .Flag {
+  border: 2px solid #FFFFFF;
+  display: inline-block;
+  width: 30px;
+  margin: 0 5px 0 5px; 
+  /*margin-right: 10px;*/
+}
+
+#app .Flag:hover {
+  border: 2px solid #000000;
+  /*border: 2px solid #36A2EB;*/
 }
 
 /* Button */

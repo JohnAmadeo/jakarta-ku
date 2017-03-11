@@ -26,18 +26,22 @@ class ChartList extends React.Component {
     this.getPalette = this.getPalette.bind(this);
   }
   getPalette(chart) {
+    const utils = new Utils();
+    const backgroundColors = utils.getDataList('palette', 'N/A')
+                                  .background;
+
     if(this.props.selectedComparison === 'field') {
-      return Utils.getPalette(chart.dataFields.values.length,
-                              Utils.palette.backgroundColors[0])
+      return utils.getPalette(chart.dataFields.values.length,
+                              backgroundColors[0])
     }
     else if(this.props.selectedComparison === 'region') {
       if(chart.chartName.includes('Persentase')) {
-        return Utils.getPalette(chart.dataFields.values.length,
-                                Utils.palette.backgroundColors[0])
+        return utils.getPalette(chart.dataFields.values.length,
+                                backgroundColors[0])
       }
       else if(chart.chartName.includes('Jumlah')) {
-        return Utils.getPalette(chart.dataFields.values.length,
-                                Utils.palette.backgroundColors[2])
+        return utils.getPalette(chart.dataFields.values.length,
+                                backgroundColors[2])
       }
     }
   }

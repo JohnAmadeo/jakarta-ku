@@ -34,19 +34,22 @@ class LabelBar extends React.Component {
     }
   }
   render() {
+    const utils = new Utils();
     console.log(this.props);
     return (
       <div className='LabelBar'>
-        {this.props.labelList.map((label, index) =>
-          (<Button type='button' key={index}
+        {this.props.labelList.map((label, index) => {
+          return (
+            <Button type='button' key={index}
                    text={label} 
                    isSelected={this.isLabelSelected(label)}
                    isHoveredOver={this.isLabelHoveredOver(label)}
                    onButtonClick={this.props.onSelectLabel
                                             .bind(this, label)}
                    onHover={this.onHoverOnLabel.bind(this, label)} 
-                   colorScheme={'blue'}/>)
-        )}
+                   colorScheme={'blue'}/>
+          )
+        })}
       </div>
     )
   }

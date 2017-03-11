@@ -123,7 +123,8 @@ class DataDisplay extends React.Component {
     if(currProps.selectedRegionList.length === 0 &&
        currState.selectedComparison === 'field') 
     {
-      return Utils.regionList;
+      const utils = new Utils();
+      return utils.getDataList('region', 'N/A');
     }
     else if(currProps.selectedRegionList.length < 2 &&
             currState.selectedComparison === 'region') 
@@ -148,7 +149,9 @@ class DataDisplay extends React.Component {
            (<LabelBar 
              onSelectLabel={this.onSelectLabel}
              selectedLabelList={this.state.selectedLabelList}
-             labelList={this.state.labelList}/>)
+             labelList={this.state.labelList}
+             selectedCategory={this.props.selectedCategory}
+             language={this.props.language}/>)
            :
            null
           }
@@ -207,28 +210,30 @@ class ComparisonBar extends React.Component {
     return (
       <div className="ComparisonBar">
         <Button 
-          key={1} 
-          text={this.props.language === 'english' ? 
-                'Compare by Field' : 'Bandingkan bidang'} 
-          isSelected={this.isComparisonSelected("field")}
+          key={0} 
+          text={this.props.language === 'ENG'         ? 
+                'Compare by field' : 
+                'Bandingkan bidang'}  
+          isSelected={this.isComparisonSelected('field')}
           onButtonClick={this.props.onSelectComparison
-                                   .bind(this, "field")}
-          isHoveredOver={this.isComparisonHoveredOver('field')}
+                                   .bind(this, 'field')}
+          isHoveredOver={this.isComparisonHoveredOver( 'field')}
           onHover={this.onHoverOnComparison.bind(this, 'field')} 
           colorScheme={'red'} />
         {this.props.selectedRegionList.length < 2 ?
-         null 
-         : 
-         (<Button 
-            key={2} 
-            text={this.props.language === 'english' ? 
-                  'Compare by Region' : 'Bandingkan kecamatan'}
-            isSelected={this.isComparisonSelected("region")}
+          null 
+          : 
+          <Button 
+            key={1} 
+            text={this.props.language === 'ENG'         ? 
+                  'Compare by region' : 
+                  'Bandingkan kecamatan'} 
+            isSelected={this.isComparisonSelected('region')}
             onButtonClick={this.props.onSelectComparison
-                                     .bind(this, "region")}
-            isHoveredOver={this.isComparisonHoveredOver('region')}
+                                     .bind(this, 'region')}
+            isHoveredOver={this.isComparisonHoveredOver( 'region')}
             onHover={this.onHoverOnComparison.bind(this, 'region')} 
-            colorScheme={'red'} />)
+            colorScheme={'red'} />   
         }
       </div>
     )
