@@ -77,7 +77,7 @@ body {
   border: 1px solid #FFFFFF; 
 }
 
-#app .Button.is-hovered-over.is-red {
+/*#app .Button.is-hovered-over.is-red {
   background-color: #FCABAB;
   color: #FFFFFF;
   border: 1px solid #FFFFFF;   
@@ -87,7 +87,7 @@ body {
   background-color: #FCABAB;
   color: #FFFFFF;
   border: 1px solid #FFFFFF;  
-}
+}*/
 
 #app .Button.is-blue {
   background-color: #FFFFFF;
